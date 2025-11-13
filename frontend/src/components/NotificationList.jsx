@@ -14,7 +14,11 @@ import Spinner from "./Spinner";
 const NotificationList = ({ onClose, onCountChange }) => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
-  const dropdownRef = useRef(null);
+  //const dropdownRef = useRef(null);
+
+  const desktopDropdownRef = useRef(null);
+  const mobileDropdownRef = useRef(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,9 +26,21 @@ const NotificationList = ({ onClose, onCountChange }) => {
 
     // Close dropdown when clicking outside
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        onClose();
+
+      const desktopEl = desktopDropdownRef.current;
+      const mobileEl = mobileDropdownRef.current;
+
+      if (desktopEl && desktopEl.contains(event.target)) {
+        return;
       }
+
+      // If click happened inside mobile menu, ignore
+      if (mobileEl && mobileEl.contains(event.target)) {
+        return;
+      }
+
+      // Otherwise, it's truly "outside"
+      onClose();
     };
 
     document.addEventListener("mousedown", handleClickOutside);
@@ -81,6 +97,8 @@ const NotificationList = ({ onClose, onCountChange }) => {
   // Mobile menu content - wrapped in a function to ensure fresh renders
   const renderMobileMenu = () => (
     <div
+      //ref={dropdownRef}
+      ref={mobileDropdownRef}
       className="md:hidden fixed inset-0 bg-white flex flex-col"
       style={{ zIndex: 9999 }}
     >
@@ -150,9 +168,8 @@ const NotificationList = ({ onClose, onCountChange }) => {
                   e.stopPropagation();
                   handleNotificationClick(notification);
                 }}
-                className={`hover:bg-gray-50 active:bg-gray-100 cursor-pointer transition ${
-                  !notification.isRead ? "bg-teal-50" : ""
-                }`}
+                className={`hover:bg-gray-50 active:bg-gray-100 cursor-pointer transition ${!notification.isRead ? "bg-teal-50" : ""
+                  }`}
                 style={{ padding: "1.25rem" }}
                 role="button"
                 tabIndex={0}
@@ -173,11 +190,10 @@ const NotificationList = ({ onClose, onCountChange }) => {
 
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <p
-                      className={`${
-                        !notification.isRead
-                          ? "font-semibold text-gray-900"
-                          : "text-gray-700"
-                      }`}
+                      className={`${!notification.isRead
+                        ? "font-semibold text-gray-900"
+                        : "text-gray-700"
+                        }`}
                       style={{ fontSize: "0.9375rem", lineHeight: "1.5" }}
                     >
                       {notification.message}
@@ -204,7 +220,8 @@ const NotificationList = ({ onClose, onCountChange }) => {
     <>
       {/* Desktop: Dropdown */}
       <div
-        ref={dropdownRef}
+        //ref={dropdownRef}
+        ref={desktopDropdownRef}
         className="hidden md:block absolute bg-white shadow-2xl border border-gray-200 overflow-y-auto slide-down"
         style={{
           right: 0,
@@ -273,9 +290,8 @@ const NotificationList = ({ onClose, onCountChange }) => {
               <div
                 key={notification._id}
                 onClick={() => handleNotificationClick(notification)}
-                className={`hover:bg-gray-50 cursor-pointer transition ${
-                  !notification.isRead ? "bg-teal-50" : ""
-                }`}
+                className={`hover:bg-gray-50 cursor-pointer transition ${!notification.isRead ? "bg-teal-50" : ""
+                  }`}
                 style={{ padding: "1rem" }}
               >
                 <div className="flex" style={{ gap: "0.75rem" }}>
@@ -294,11 +310,10 @@ const NotificationList = ({ onClose, onCountChange }) => {
 
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <p
-                      className={`${
-                        !notification.isRead
-                          ? "font-semibold text-gray-900"
-                          : "text-gray-700"
-                      }`}
+                      className={`${!notification.isRead
+                        ? "font-semibold text-gray-900"
+                        : "text-gray-700"
+                        }`}
                       style={{ fontSize: "0.875rem" }}
                     >
                       {notification.message}
