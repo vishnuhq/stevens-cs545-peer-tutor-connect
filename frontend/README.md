@@ -58,31 +58,33 @@ This frontend application handles all client-side interactions for the peer tuto
 
 ```
 frontend/
-├── index.html                  # HTML entry point
-├── package.json                # Dependencies and scripts
-├── vite.config.js              # Vite configuration with proxy
-├── tailwind.config.js          # Tailwind CSS configuration
-├── .eslintrc.js                # ESLint configuration
+├── index.html                    # HTML entry point
+├── package.json                  # Dependencies and scripts
+├── vite.config.js                # Vite configuration with proxy
+├── tailwind.config.js            # Tailwind CSS configuration
+├── .eslintrc.js                  # ESLint configuration
 ├── src/
-│   ├── main.jsx                # React application entry point
-│   ├── App.jsx                 # Main app component with routing
-│   ├── index.css               # Global styles + Tailwind directives
-│   ├── components/             # React components (10 total)
-│   │   ├── Login.jsx           # Landing page + login form
-│   │   ├── Header.jsx          # Navigation bar with notifications
-│   │   ├── CoursesList.jsx     # Student's enrolled courses
-│   │   ├── QuestionsList.jsx   # Questions for a specific course
-│   │   ├── QuestionDetail.jsx  # Full question with all responses
-│   │   ├── QuestionForm.jsx    # Create/edit question form
-│   │   ├── ResponseForm.jsx    # Create response form
-│   │   ├── NotificationList.jsx # Notification dropdown
-│   │   ├── ProtectedRoute.jsx  # Route wrapper for authentication
-│   │   └── Spinner.jsx         # Loading indicator component
-│   ├── context/                # React Context providers
-│   │   └── AuthContext.jsx     # Global authentication state
-│   └── api/                    # API integration layer
-│       └── api.js              # Axios instance + all API calls
-└── public/                     # Static assets (if any)
+│   ├── main.jsx                  # React application entry point
+│   ├── App.jsx                   # Main app component with routing
+│   ├── index.css                 # Global styles + Tailwind directives
+│   ├── components/               # React components (12 total)
+│   │   ├── Login.jsx             # Landing page + login form
+│   │   ├── Header.jsx            # Navigation bar with notifications
+│   │   ├── CoursesList.jsx       # Student's enrolled courses
+│   │   ├── QuestionsList.jsx     # Questions for a specific course
+│   │   ├── QuestionDetail.jsx    # Full question with all responses
+│   │   ├── QuestionForm.jsx      # Create/edit question form
+│   │   ├── ResponseForm.jsx      # Create response form
+│   │   ├── NotificationList.jsx  # Notification dropdown
+│   │   ├── HelpWidget.jsx        # Floating help guide button
+│   │   ├── ScrollToTopButton.jsx # Scroll to top button
+│   │   ├── ProtectedRoute.jsx    # Route wrapper for authentication
+│   │   └── Spinner.jsx           # Loading indicator component
+│   ├── context/                  # React Context providers
+│   │   └── AuthContext.jsx       # Global authentication state
+│   └── api/                      # API integration layer
+│       └── api.js                # Axios instance + all API calls
+└── public/                       # Static assets (if any)
 ```
 
 ### Component Breakdown
@@ -103,6 +105,8 @@ frontend/
 
 **Utility Components:**
 
+- **HelpWidget.jsx** - Floating help guide button with user instructions, responsive mobile full-screen view
+- **ScrollToTopButton.jsx** - Scroll to top button that appears after scrolling down 300px
 - **ProtectedRoute.jsx** - HOC that checks authentication before rendering protected routes
 - **Spinner.jsx** - Reusable loading spinner with customizable size and text
 

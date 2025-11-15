@@ -1,59 +1,46 @@
+/**
+ * ScrollToTopButton Component
+ * Scroll to top button that appears after scrolling
+ */
+
 import { useEffect, useState } from "react";
 import { ChevronUp } from "lucide-react";
 
 const ScrollToTopButton = () => {
-    const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(false);
 
-    useEffect(() => {
-        const handleScroll = () => {
-
-            if (window.scrollY > 300) {
-                setVisible(true);
-            } else {
-                setVisible(false);
-            }
-        };
-
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
-
-    const scrollToTop = () => {
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth",
-        });
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 300) {
+        setVisible(true);
+      } else {
+        setVisible(false);
+      }
     };
 
-    if (!visible) return null;
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-    return (
-        <button
-            type="button"
-            onClick={scrollToTop}
-            aria-label="Scroll to top"
-            style={{
-                position: "fixed",
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
 
-                right: "5.25rem",
-                bottom: "1.5rem",
-                width: "3rem",
-                height: "3rem",
-                borderRadius: "999px",
-                border: "none",
-                backgroundColor: "#0f766e",
-                color: "white",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                boxShadow: "0 10px 25px rgba(15, 23, 42, 0.25)",
-                zIndex: 40,
-            }}
-        >
-            <ChevronUp size={20} />
-        </button>
-    );
+  if (!visible) return null;
+
+  return (
+    <button
+      type="button"
+      onClick={scrollToTop}
+      aria-label="Scroll to top"
+      className="fixed right-20 bottom-6 w-12 h-12 rounded-full bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white flex items-center justify-center cursor-pointer shadow-xl transition-all z-40"
+    >
+      <ChevronUp size={20} />
+    </button>
+  );
 };
 
 export default ScrollToTopButton;
