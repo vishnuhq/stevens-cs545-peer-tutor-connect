@@ -168,7 +168,7 @@ const QuestionsList = () => {
 
           <button
             onClick={() => navigate(`/courses/${courseId}/questions/new`)}
-            className="inline-flex items-center bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all"
+            className="inline-flex items-center flex-shrink-0 whitespace-nowrap bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all"
             style={{
               gap: "0.5rem",
               padding: "1rem 1.5rem",
