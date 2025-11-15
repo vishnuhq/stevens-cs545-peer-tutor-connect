@@ -4,7 +4,11 @@
  */
 
 import { jest } from '@jest/globals';
-import { connectToDb, closeConnection, getDb } from '../../database_config/index.js';
+import {
+  connectToDb,
+  closeConnection,
+  getDb,
+} from '../../database_config/index.js';
 import {
   createResponse,
   getResponseById,
@@ -212,7 +216,7 @@ describe('Response Data Functions', () => {
       });
 
       // Wait a moment to ensure different timestamp
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10));
 
       const updates = {
         content: 'Updated content',
@@ -303,7 +307,9 @@ describe('Response Data Functions', () => {
 
     it('should throw error if response not found', async () => {
       const fakeId = '507f1f77bcf86cd799439011';
-      await expect(deleteResponse(fakeId)).rejects.toThrow('Response not found');
+      await expect(deleteResponse(fakeId)).rejects.toThrow(
+        'Response not found'
+      );
     });
   });
 });

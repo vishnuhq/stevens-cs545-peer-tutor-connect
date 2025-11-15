@@ -7,7 +7,11 @@ import { jest } from '@jest/globals';
 import request from 'supertest';
 import bcrypt from 'bcrypt';
 import { ObjectId } from 'mongodb';
-import { connectToDb, closeConnection, getDb } from '../../database_config/index.js';
+import {
+  connectToDb,
+  closeConnection,
+  getDb,
+} from '../../database_config/index.js';
 import app from '../../app.js';
 
 describe('Responses Routes', () => {
@@ -80,20 +84,16 @@ describe('Responses Routes', () => {
     testQuestion = questionResult.insertedId;
 
     // Login both students
-    const login1 = await request(app)
-      .post('/api/auth/login')
-      .send({
-        universityEmail: 'test.student@stevens.edu',
-        password: 'password123',
-      });
+    const login1 = await request(app).post('/api/auth/login').send({
+      universityEmail: 'test.student@stevens.edu',
+      password: 'password123',
+    });
     authCookie = login1.headers['set-cookie'];
 
-    const login2 = await request(app)
-      .post('/api/auth/login')
-      .send({
-        universityEmail: 'other.student@stevens.edu',
-        password: 'password123',
-      });
+    const login2 = await request(app).post('/api/auth/login').send({
+      universityEmail: 'other.student@stevens.edu',
+      password: 'password123',
+    });
     otherAuthCookie = login2.headers['set-cookie'];
   });
 
@@ -130,12 +130,10 @@ describe('Responses Routes', () => {
     });
 
     it('should require authentication', async () => {
-      const response = await request(app)
-        .post('/api/responses')
-        .send({
-          questionId: testQuestion.toString(),
-          content: 'Test',
-        });
+      const response = await request(app).post('/api/responses').send({
+        questionId: testQuestion.toString(),
+        content: 'Test',
+      });
 
       expect(response.status).toBe(401);
     });
@@ -213,7 +211,9 @@ describe('Responses Routes', () => {
       expect(response.body.success).toBe(true);
 
       // Verify deletion
-      const found = await db.collection('responses').findOne({ _id: responseId });
+      const found = await db
+        .collection('responses')
+        .findOne({ _id: responseId });
       expect(found).toBeNull();
     });
 
@@ -226,8 +226,9 @@ describe('Responses Routes', () => {
     });
 
     it('should require authentication', async () => {
-      const response = await request(app)
-        .delete(`/api/responses/${responseId}`);
+      const response = await request(app).delete(
+        `/api/responses/${responseId}`
+      );
 
       expect(response.status).toBe(401);
     });

@@ -5,10 +5,7 @@
 
 import { ObjectId } from 'mongodb';
 import { getCollection, COLLECTIONS } from '../database_config/index.js';
-import {
-  validateString,
-  isValidObjectId,
-} from '../validation.js';
+import { validateString, isValidObjectId } from '../validation.js';
 
 /**
  * Creates a new response in the database
@@ -30,9 +27,8 @@ export const createResponse = async (responseData) => {
 
   const content = validateString(responseData.content, 'Content', 1, 1500);
 
-  const isAnonymous = responseData.isAnonymous !== undefined
-    ? responseData.isAnonymous
-    : false;
+  const isAnonymous =
+    responseData.isAnonymous !== undefined ? responseData.isAnonymous : false;
 
   if (typeof isAnonymous !== 'boolean') {
     throw new Error('isAnonymous must be a boolean');
@@ -74,7 +70,9 @@ export const getResponseById = async (responseId) => {
   }
 
   const responsesCollection = getCollection(COLLECTIONS.RESPONSES);
-  const response = await responsesCollection.findOne({ _id: new ObjectId(responseId) });
+  const response = await responsesCollection.findOne({
+    _id: new ObjectId(responseId),
+  });
 
   return response;
 };
@@ -86,7 +84,10 @@ export const getResponseById = async (responseId) => {
  * @returns {Promise<Array>} Array of response documents
  * @throws {Error} If questionId is invalid
  */
-export const getResponsesByQuestionId = async (questionId, sortOption = 'newest') => {
+export const getResponsesByQuestionId = async (
+  questionId,
+  sortOption = 'newest'
+) => {
   if (!isValidObjectId(questionId)) {
     throw new Error('Invalid question ID');
   }
@@ -107,36 +108,38 @@ export const getResponsesByQuestionId = async (questionId, sortOption = 'newest'
   }
 
   // Use aggregation to populate poster information
-  const responses = await responsesCollection.aggregate([
-    { $match: { questionId: new ObjectId(questionId) } },
-    {
-      $lookup: {
-        from: 'students',
-        localField: 'posterId',
-        foreignField: '_id',
-        as: 'poster'
-      }
-    },
-    {
-      $addFields: {
-        posterName: {
-          $cond: {
-            if: '$isAnonymous',
-            then: 'Anonymous',
-            else: {
-              $concat: [
-                { $arrayElemAt: ['$poster.firstName', 0] },
-                ' ',
-                { $arrayElemAt: ['$poster.lastName', 0] }
-              ]
-            }
-          }
-        }
-      }
-    },
-    { $project: { poster: 0 } }, // Remove full poster object
-    { $sort: sortStage }
-  ]).toArray();
+  const responses = await responsesCollection
+    .aggregate([
+      { $match: { questionId: new ObjectId(questionId) } },
+      {
+        $lookup: {
+          from: 'students',
+          localField: 'posterId',
+          foreignField: '_id',
+          as: 'poster',
+        },
+      },
+      {
+        $addFields: {
+          posterName: {
+            $cond: {
+              if: '$isAnonymous',
+              then: 'Anonymous',
+              else: {
+                $concat: [
+                  { $arrayElemAt: ['$poster.firstName', 0] },
+                  ' ',
+                  { $arrayElemAt: ['$poster.lastName', 0] },
+                ],
+              },
+            },
+          },
+        },
+      },
+      { $project: { poster: 0 } }, // Remove full poster object
+      { $sort: sortStage },
+    ])
+    .toArray();
 
   return responses;
 };
@@ -204,7 +207,9 @@ export const deleteResponse = async (responseId) => {
   }
 
   const responsesCollection = getCollection(COLLECTIONS.RESPONSES);
-  const result = await responsesCollection.deleteOne({ _id: new ObjectId(responseId) });
+  const result = await responsesCollection.deleteOne({
+    _id: new ObjectId(responseId),
+  });
 
   if (result.deletedCount === 0) {
     throw new Error('Response not found');

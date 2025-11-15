@@ -5,7 +5,11 @@
 
 import { jest } from '@jest/globals';
 import { ObjectId } from 'mongodb';
-import { connectToDb, closeConnection, getDb } from '../../database_config/index.js';
+import {
+  connectToDb,
+  closeConnection,
+  getDb,
+} from '../../database_config/index.js';
 import {
   createNotification,
   getNotificationById,
@@ -155,11 +159,14 @@ describe('Notification Data Functions', () => {
       const notifications = await getNotificationsByStudentId(recipientId);
 
       expect(notifications).toHaveLength(2);
-      expect(notifications.every(n => !n.isRead)).toBe(true);
+      expect(notifications.every((n) => !n.isRead)).toBe(true);
     });
 
     it('should return all notifications when unreadOnly is false', async () => {
-      const notifications = await getNotificationsByStudentId(recipientId, false);
+      const notifications = await getNotificationsByStudentId(
+        recipientId,
+        false
+      );
 
       expect(notifications).toHaveLength(3);
     });

@@ -6,7 +6,11 @@
 import { jest } from '@jest/globals';
 import request from 'supertest';
 import bcrypt from 'bcrypt';
-import { connectToDb, closeConnection, getDb } from '../../database_config/index.js';
+import {
+  connectToDb,
+  closeConnection,
+  getDb,
+} from '../../database_config/index.js';
 import app from '../../app.js';
 
 describe('Authentication Routes', () => {
@@ -52,12 +56,10 @@ describe('Authentication Routes', () => {
 
   describe('POST /api/auth/login', () => {
     it('should login successfully with valid credentials', async () => {
-      const response = await request(app)
-        .post('/api/auth/login')
-        .send({
-          universityEmail: 'test.student@stevens.edu',
-          password: 'password123',
-        });
+      const response = await request(app).post('/api/auth/login').send({
+        universityEmail: 'test.student@stevens.edu',
+        password: 'password123',
+      });
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
@@ -72,24 +74,20 @@ describe('Authentication Routes', () => {
     });
 
     it('should be case-insensitive for email', async () => {
-      const response = await request(app)
-        .post('/api/auth/login')
-        .send({
-          universityEmail: 'TEST.STUDENT@STEVENS.EDU',
-          password: 'password123',
-        });
+      const response = await request(app).post('/api/auth/login').send({
+        universityEmail: 'TEST.STUDENT@STEVENS.EDU',
+        password: 'password123',
+      });
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
     });
 
     it('should fail with non-existent email', async () => {
-      const response = await request(app)
-        .post('/api/auth/login')
-        .send({
-          universityEmail: 'nonexistent@stevens.edu',
-          password: 'password123',
-        });
+      const response = await request(app).post('/api/auth/login').send({
+        universityEmail: 'nonexistent@stevens.edu',
+        password: 'password123',
+      });
 
       expect(response.status).toBe(401);
       expect(response.body.success).toBe(false);
@@ -97,12 +95,10 @@ describe('Authentication Routes', () => {
     });
 
     it('should fail with wrong password', async () => {
-      const response = await request(app)
-        .post('/api/auth/login')
-        .send({
-          universityEmail: 'test.student@stevens.edu',
-          password: 'wrongpassword',
-        });
+      const response = await request(app).post('/api/auth/login').send({
+        universityEmail: 'test.student@stevens.edu',
+        password: 'wrongpassword',
+      });
 
       expect(response.status).toBe(401);
       expect(response.body.success).toBe(false);
@@ -110,12 +106,10 @@ describe('Authentication Routes', () => {
     });
 
     it('should fail with invalid email format', async () => {
-      const response = await request(app)
-        .post('/api/auth/login')
-        .send({
-          universityEmail: 'invalid-email',
-          password: 'password123',
-        });
+      const response = await request(app).post('/api/auth/login').send({
+        universityEmail: 'invalid-email',
+        password: 'password123',
+      });
 
       expect(response.status).toBe(400);
       expect(response.body.success).toBe(false);
@@ -123,35 +117,29 @@ describe('Authentication Routes', () => {
     });
 
     it('should fail with non-Stevens email', async () => {
-      const response = await request(app)
-        .post('/api/auth/login')
-        .send({
-          universityEmail: 'test@gmail.com',
-          password: 'password123',
-        });
+      const response = await request(app).post('/api/auth/login').send({
+        universityEmail: 'test@gmail.com',
+        password: 'password123',
+      });
 
       expect(response.status).toBe(400);
       expect(response.body.success).toBe(false);
     });
 
     it('should fail with missing password', async () => {
-      const response = await request(app)
-        .post('/api/auth/login')
-        .send({
-          universityEmail: 'test.student@stevens.edu',
-        });
+      const response = await request(app).post('/api/auth/login').send({
+        universityEmail: 'test.student@stevens.edu',
+      });
 
       expect(response.status).toBe(400);
       expect(response.body.success).toBe(false);
     });
 
     it('should fail with empty password', async () => {
-      const response = await request(app)
-        .post('/api/auth/login')
-        .send({
-          universityEmail: 'test.student@stevens.edu',
-          password: '   ',
-        });
+      const response = await request(app).post('/api/auth/login').send({
+        universityEmail: 'test.student@stevens.edu',
+        password: '   ',
+      });
 
       expect(response.status).toBe(400);
       expect(response.body.success).toBe(false);
@@ -161,12 +149,10 @@ describe('Authentication Routes', () => {
   describe('POST /api/auth/logout', () => {
     it('should logout successfully when authenticated', async () => {
       // First login
-      const loginResponse = await request(app)
-        .post('/api/auth/login')
-        .send({
-          universityEmail: 'test.student@stevens.edu',
-          password: 'password123',
-        });
+      const loginResponse = await request(app).post('/api/auth/login').send({
+        universityEmail: 'test.student@stevens.edu',
+        password: 'password123',
+      });
 
       const cookies = loginResponse.headers['set-cookie'];
 
@@ -181,24 +167,23 @@ describe('Authentication Routes', () => {
     });
 
     it('should fail when not authenticated', async () => {
-      const response = await request(app)
-        .post('/api/auth/logout');
+      const response = await request(app).post('/api/auth/logout');
 
       expect(response.status).toBe(401);
       expect(response.body.success).toBe(false);
-      expect(response.body.error).toBe('Authentication required. Please log in.');
+      expect(response.body.error).toBe(
+        'Authentication required. Please log in.'
+      );
     });
   });
 
   describe('GET /api/auth/check', () => {
     it('should return logged in status when authenticated', async () => {
       // First login
-      const loginResponse = await request(app)
-        .post('/api/auth/login')
-        .send({
-          universityEmail: 'test.student@stevens.edu',
-          password: 'password123',
-        });
+      const loginResponse = await request(app).post('/api/auth/login').send({
+        universityEmail: 'test.student@stevens.edu',
+        password: 'password123',
+      });
 
       const cookies = loginResponse.headers['set-cookie'];
 
@@ -215,8 +200,7 @@ describe('Authentication Routes', () => {
     });
 
     it('should return not logged in when no session', async () => {
-      const response = await request(app)
-        .get('/api/auth/check');
+      const response = await request(app).get('/api/auth/check');
 
       expect(response.status).toBe(200);
       expect(response.body.loggedIn).toBe(false);
@@ -225,19 +209,15 @@ describe('Authentication Routes', () => {
 
     it('should return not logged in after logout', async () => {
       // Login
-      const loginResponse = await request(app)
-        .post('/api/auth/login')
-        .send({
-          universityEmail: 'test.student@stevens.edu',
-          password: 'password123',
-        });
+      const loginResponse = await request(app).post('/api/auth/login').send({
+        universityEmail: 'test.student@stevens.edu',
+        password: 'password123',
+      });
 
       const cookies = loginResponse.headers['set-cookie'];
 
       // Logout
-      await request(app)
-        .post('/api/auth/logout')
-        .set('Cookie', cookies);
+      await request(app).post('/api/auth/logout').set('Cookie', cookies);
 
       // Check status (with old cookies)
       const checkResponse = await request(app)

@@ -5,7 +5,11 @@
 
 import { jest } from '@jest/globals';
 import bcrypt from 'bcrypt';
-import { connectToDb, closeConnection, getDb } from '../../database_config/index.js';
+import {
+  connectToDb,
+  closeConnection,
+  getDb,
+} from '../../database_config/index.js';
 import {
   createStudent,
   getStudentById,
@@ -352,15 +356,17 @@ describe('Student Data Functions', () => {
       });
 
       await expect(
-        updateStudent(created._id.toString(), { universityEmail: 'new@stevens.edu' })
+        updateStudent(created._id.toString(), {
+          universityEmail: 'new@stevens.edu',
+        })
       ).rejects.toThrow('Cannot update field: universityEmail');
     });
 
     it('should throw error if student not found', async () => {
       const fakeId = '507f1f77bcf86cd799439011';
-      await expect(updateStudent(fakeId, { firstName: 'Test' })).rejects.toThrow(
-        'Student not found'
-      );
+      await expect(
+        updateStudent(fakeId, { firstName: 'Test' })
+      ).rejects.toThrow('Student not found');
     });
 
     it('should update updatedAt timestamp', async () => {
@@ -374,7 +380,7 @@ describe('Student Data Functions', () => {
       });
 
       // Wait a moment to ensure different timestamp
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10));
 
       const updated = await updateStudent(created._id.toString(), { age: 21 });
 

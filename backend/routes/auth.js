@@ -28,10 +28,7 @@ router.post(
         }
         return true;
       }),
-    body('password')
-      .trim()
-      .notEmpty()
-      .withMessage('Password is required'),
+    body('password').trim().notEmpty().withMessage('Password is required'),
   ],
   async (req, res, next) => {
     try {
@@ -56,7 +53,10 @@ router.post(
       }
 
       // Verify password
-      const isPasswordValid = await bcrypt.compare(password, student.hashedPassword);
+      const isPasswordValid = await bcrypt.compare(
+        password,
+        student.hashedPassword
+      );
       if (!isPasswordValid) {
         return res.status(401).json({
           success: false,

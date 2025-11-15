@@ -7,6 +7,7 @@ Express.js REST API server for the Peer-Tutor Connect platform. Provides authent
 The backend is a RESTful API built with Express.js that handles all server-side logic for the Peer-Tutor Connect application. It provides secure session-based authentication, comprehensive input validation, and a clean separation between route handlers and data access layers.
 
 Key responsibilities:
+
 - User authentication with Stevens email addresses
 - Course and student enrollment management
 - Question and response CRUD operations
@@ -106,9 +107,11 @@ Stores user accounts for Stevens students.
 ```
 
 **Indexes:**
+
 - Unique index on `universityEmail` (lowercase)
 
 **Example:**
+
 ```javascript
 {
   _id: ObjectId("507f1f77bcf86cd799439011"),
@@ -147,9 +150,11 @@ Stores course information.
 ```
 
 **Indexes:**
+
 - Unique index on `courseCode`
 
 **Example:**
+
 ```javascript
 {
   _id: ObjectId("507f1f77bcf86cd799439012"),
@@ -187,10 +192,12 @@ Stores questions posted by students.
 ```
 
 **Indexes:**
+
 - Index on `courseId` for efficient course-based queries
 - Index on `posterId` for user's question history
 
 **Example:**
+
 ```javascript
 {
   _id: ObjectId("507f1f77bcf86cd799439015"),
@@ -223,9 +230,11 @@ Stores responses to questions.
 ```
 
 **Indexes:**
+
 - Index on `questionId` for efficient response retrieval
 
 **Example:**
+
 ```javascript
 {
   _id: ObjectId("507f1f77bcf86cd799439016"),
@@ -257,10 +266,12 @@ Stores notifications for students.
 ```
 
 **Indexes:**
+
 - Index on `recipientId` for efficient user notification queries
 - Compound index on `recipientId` + `isRead` for unread notifications
 
 **Example:**
+
 ```javascript
 {
   _id: ObjectId("507f1f77bcf86cd799439017"),
@@ -279,6 +290,7 @@ Stores notifications for students.
 Base URL: `http://localhost:3000/api`
 
 All endpoints return JSON with consistent format:
+
 ```javascript
 // Success response
 {
@@ -296,9 +308,11 @@ All endpoints return JSON with consistent format:
 ### Authentication Routes (`/api/auth`)
 
 #### POST /api/auth/login
+
 Login with Stevens email and password.
 
 **Request Body:**
+
 ```javascript
 {
   "universityEmail": "john.smith@stevens.edu",  // Required, must contain @stevens.edu
@@ -307,6 +321,7 @@ Login with Stevens email and password.
 ```
 
 **Response (200):**
+
 ```javascript
 {
   "success": true,
@@ -320,6 +335,7 @@ Login with Stevens email and password.
 ```
 
 **Response (401):**
+
 ```javascript
 {
   "success": false,
@@ -330,11 +346,13 @@ Login with Stevens email and password.
 **Sets Session Cookie:** httpOnly, sameSite=lax, 48-hour expiry
 
 #### POST /api/auth/logout
+
 Logout and destroy session.
 
 **Authentication:** Required
 
 **Response (200):**
+
 ```javascript
 {
   "success": true,
@@ -343,9 +361,11 @@ Logout and destroy session.
 ```
 
 #### GET /api/auth/check
+
 Check if user is authenticated.
 
 **Response (200):**
+
 ```javascript
 {
   "success": true,
@@ -360,6 +380,7 @@ Check if user is authenticated.
 ```
 
 **Response (401):**
+
 ```javascript
 {
   "success": false,
@@ -370,11 +391,13 @@ Check if user is authenticated.
 ### Course Routes (`/api/courses`)
 
 #### GET /api/courses
+
 Get all courses the authenticated student is enrolled in.
 
 **Authentication:** Required
 
 **Response (200):**
+
 ```javascript
 {
   "success": true,
@@ -396,16 +419,19 @@ Get all courses the authenticated student is enrolled in.
 ```
 
 #### GET /api/courses/:courseId
+
 Get a specific course by ID.
 
 **Authentication:** Required
 
 **Parameters:**
+
 - `courseId`: MongoDB ObjectId
 
 **Response (200):** Single course object
 
 **Response (404):**
+
 ```javascript
 {
   "success": false,
@@ -416,18 +442,22 @@ Get a specific course by ID.
 ### Question Routes (`/api/questions`)
 
 #### GET /api/questions/:courseId
+
 Get all questions for a course with filtering and sorting.
 
 **Authentication:** Required
 
 **Parameters:**
+
 - `courseId`: MongoDB ObjectId
 
 **Query Parameters:**
+
 - `sort`: Optional, "newest" (default), "oldest"
 - `filter`: Optional, "answered", "unanswered"
 
 **Response (200):**
+
 ```javascript
 {
   "success": true,
@@ -450,14 +480,17 @@ Get all questions for a course with filtering and sorting.
 ```
 
 #### GET /api/questions/detail/:questionId
+
 Get a single question with full details and all responses.
 
 **Authentication:** Required
 
 **Parameters:**
+
 - `questionId`: MongoDB ObjectId
 
 **Response (200):**
+
 ```javascript
 {
   "success": true,
@@ -490,11 +523,13 @@ Get a single question with full details and all responses.
 ```
 
 #### POST /api/questions
+
 Create a new question.
 
 **Authentication:** Required
 
 **Request Body:**
+
 ```javascript
 {
   "courseId": "507f1f77bcf86cd799439012",  // Required, ObjectId
@@ -505,6 +540,7 @@ Create a new question.
 ```
 
 **Response (201):**
+
 ```javascript
 {
   "success": true,
@@ -513,6 +549,7 @@ Create a new question.
 ```
 
 #### PATCH /api/questions/:questionId
+
 Update a question (poster only).
 
 **Authentication:** Required
@@ -520,9 +557,11 @@ Update a question (poster only).
 **Authorization:** Must be the question poster
 
 **Parameters:**
+
 - `questionId`: MongoDB ObjectId
 
 **Request Body:**
+
 ```javascript
 {
   "title": "Updated title",        // Optional
@@ -532,6 +571,7 @@ Update a question (poster only).
 ```
 
 **Response (200):**
+
 ```javascript
 {
   "success": true,
@@ -540,6 +580,7 @@ Update a question (poster only).
 ```
 
 #### DELETE /api/questions/:questionId
+
 Delete a question (poster only).
 
 **Authentication:** Required
@@ -547,9 +588,11 @@ Delete a question (poster only).
 **Authorization:** Must be the question poster
 
 **Parameters:**
+
 - `questionId`: MongoDB ObjectId
 
 **Response (200):**
+
 ```javascript
 {
   "success": true,
@@ -560,14 +603,17 @@ Delete a question (poster only).
 ### Response Routes (`/api/responses`)
 
 #### GET /api/responses/:questionId
+
 Get all responses for a question.
 
 **Authentication:** Required
 
 **Parameters:**
+
 - `questionId`: MongoDB ObjectId
 
 **Response (200):**
+
 ```javascript
 {
   "success": true,
@@ -588,11 +634,13 @@ Get all responses for a question.
 ```
 
 #### POST /api/responses
+
 Create a new response to a question.
 
 **Authentication:** Required
 
 **Request Body:**
+
 ```javascript
 {
   "questionId": "507f1f77bcf86cd799439015",  // Required, ObjectId
@@ -602,6 +650,7 @@ Create a new response to a question.
 ```
 
 **Response (201):**
+
 ```javascript
 {
   "success": true,
@@ -612,6 +661,7 @@ Create a new response to a question.
 **Side Effect:** Creates notification for question poster
 
 #### PATCH /api/responses/:responseId
+
 Update a response (responder only).
 
 **Authentication:** Required
@@ -619,9 +669,11 @@ Update a response (responder only).
 **Authorization:** Must be the responder
 
 **Parameters:**
+
 - `responseId`: MongoDB ObjectId
 
 **Request Body:**
+
 ```javascript
 {
   "content": "Updated content"     // Required, 1-1500 chars
@@ -629,6 +681,7 @@ Update a response (responder only).
 ```
 
 **Response (200):**
+
 ```javascript
 {
   "success": true,
@@ -637,6 +690,7 @@ Update a response (responder only).
 ```
 
 #### PATCH /api/responses/:responseId/helpful
+
 Mark a response as helpful (question poster only).
 
 **Authentication:** Required
@@ -644,9 +698,11 @@ Mark a response as helpful (question poster only).
 **Authorization:** Must be the question poster
 
 **Parameters:**
+
 - `responseId`: MongoDB ObjectId
 
 **Response (200):**
+
 ```javascript
 {
   "success": true,
@@ -655,6 +711,7 @@ Mark a response as helpful (question poster only).
 ```
 
 #### DELETE /api/responses/:responseId
+
 Delete a response (responder only).
 
 **Authentication:** Required
@@ -662,9 +719,11 @@ Delete a response (responder only).
 **Authorization:** Must be the responder
 
 **Parameters:**
+
 - `responseId`: MongoDB ObjectId
 
 **Response (200):**
+
 ```javascript
 {
   "success": true,
@@ -675,14 +734,17 @@ Delete a response (responder only).
 ### Notification Routes (`/api/notifications`)
 
 #### GET /api/notifications
+
 Get notifications for the authenticated student.
 
 **Authentication:** Required
 
 **Query Parameters:**
+
 - `unreadOnly`: Optional, "true" or "false" (default: "true")
 
 **Response (200):**
+
 ```javascript
 {
   "success": true,
@@ -702,11 +764,13 @@ Get notifications for the authenticated student.
 ```
 
 #### GET /api/notifications/count
+
 Get count of unread notifications for authenticated student.
 
 **Authentication:** Required
 
 **Response (200):**
+
 ```javascript
 {
   "success": true,
@@ -715,6 +779,7 @@ Get count of unread notifications for authenticated student.
 ```
 
 #### PATCH /api/notifications/:notificationId/read
+
 Mark a specific notification as read.
 
 **Authentication:** Required
@@ -722,9 +787,11 @@ Mark a specific notification as read.
 **Authorization:** Must be the recipient
 
 **Parameters:**
+
 - `notificationId`: MongoDB ObjectId
 
 **Response (200):**
+
 ```javascript
 {
   "success": true,
@@ -733,11 +800,13 @@ Mark a specific notification as read.
 ```
 
 #### PATCH /api/notifications/read-all
+
 Mark all notifications as read for authenticated student.
 
 **Authentication:** Required
 
 **Response (200):**
+
 ```javascript
 {
   "success": true,
@@ -767,6 +836,7 @@ FRONTEND_URL=http://localhost:5173
 ```
 
 **Important Notes:**
+
 - `SESSION_SECRET`: Must be a strong, random string (minimum 32 characters) in production
 - `FRONTEND_URL`: Must match exactly where your frontend is running (no trailing slash)
 - `NODE_ENV`: Set to "production" when deploying to production environment
@@ -819,6 +889,7 @@ npm run seed
 ```
 
 This creates:
+
 - 5 Stevens courses (CS545, CS590, CS555, SSW590, CS546)
 - 100 diverse student accounts (all with password: `password123`)
 - course-relevant questions
@@ -829,11 +900,13 @@ This creates:
 ### 5. Start Server
 
 **Development mode** (with auto-reload):
+
 ```bash
 npm run dev
 ```
 
 **Production mode**:
+
 ```bash
 npm start
 ```
@@ -843,11 +916,13 @@ Server will start on `http://localhost:3000` (or the PORT specified in `.env`).
 ### 6. Verify Installation
 
 Test the health check endpoint:
+
 ```bash
 curl http://localhost:3000/health
 ```
 
 Expected response:
+
 ```javascript
 {
   "status": "ok",
@@ -866,6 +941,7 @@ npm test
 This runs all 168 tests serially and generates coverage reports in the `coverage/` directory.
 
 **Expected Output:**
+
 ```
 Test Suites: 10 passed, 10 total
 Tests:       168 passed, 168 total
@@ -873,6 +949,7 @@ Time:        ~11s
 ```
 
 **Coverage Thresholds:**
+
 - Statements: 70%
 - Branches: 68%
 - Functions: 70%
@@ -898,6 +975,7 @@ npm test -- tests/routes/auth.test.js
 Tests use a separate test database: `peer-tutor-connect-test`
 
 The test database is automatically:
+
 - Created when tests start
 - Cleared before each test (beforeEach hooks)
 - Cleaned up after all tests (afterAll hooks)
@@ -907,23 +985,28 @@ The test database is automatically:
 ## Security Features
 
 ### Password Security
+
 - **bcrypt hashing**: 10 salt rounds (computationally expensive to crack)
 - Passwords never stored or transmitted in plain text
 - Password requirements enforced at client and server
 
 ### Session Security
+
 - **httpOnly cookies**: JavaScript cannot access session cookies (XSS protection)
 - **sameSite cookies**: CSRF protection
 - **48-hour expiry**: Automatic logout after 2 days
 - **Secure flag in production**: HTTPS-only cookies when NODE_ENV=production
 
 ### Input Validation
+
 **Three-layer validation approach:**
+
 1. **Client-side**: Basic validation in React forms (immediate feedback)
 2. **Route middleware**: express-validator checks all request parameters
 3. **Data layer**: Final validation before database operations
 
 **Validation includes:**
+
 - Type checking (string, number, boolean, ObjectId)
 - Length constraints (min/max characters)
 - Format validation (email, ObjectId)
@@ -931,6 +1014,7 @@ The test database is automatically:
 - XSS prevention (HTML escaping)
 
 ### Authorization
+
 - **Authentication required**: Most endpoints require valid session
 - **Resource ownership**: Users can only edit/delete their own content
   - Question poster can update/delete question
@@ -939,11 +1023,13 @@ The test database is automatically:
 - **Course enrollment**: Students can only access courses they're enrolled in
 
 ### MongoDB Injection Prevention
+
 - **ObjectId validation**: All IDs validated before database queries
 - **Parameterized queries**: Using MongoDB driver's safe query methods
 - **Type enforcement**: Strict typing for all database operations
 
 ### Additional Security
+
 - **Helmet**: Security headers (XSS, clickjacking, MIME sniffing protection)
 - **CORS**: Restricted to frontend origin only
 - **Rate limiting**: Can be added via express-rate-limit (not currently implemented)
@@ -956,6 +1042,7 @@ The test database is automatically:
 **Error: connect ECONNREFUSED 127.0.0.1:27017**
 
 MongoDB is not running. Start it:
+
 ```bash
 # macOS
 brew services start mongodb-community
@@ -970,6 +1057,7 @@ mongosh
 **Error: MongoServerSelectionError**
 
 MongoDB connection string is incorrect. Check:
+
 - `MONGODB_URI` in `.env` is correct
 - MongoDB is listening on the correct port
 - Firewall isn't blocking port 27017
@@ -981,6 +1069,7 @@ MongoDB connection string is incorrect. Check:
 Port 3000 is already in use. Options:
 
 1. Kill the process using port 3000:
+
 ```bash
 # Find process ID
 lsof -i :3000
@@ -990,6 +1079,7 @@ kill -9 <PID>
 ```
 
 2. Change port in `.env`:
+
 ```bash
 PORT=3001
 ```
@@ -1013,6 +1103,7 @@ PORT=3001
 **Tests fail randomly or intermittently**
 
 Tests must run serially (not in parallel) due to shared database. Ensure you're using:
+
 ```bash
 npm test  # Already configured with --runInBand flag
 ```
@@ -1020,6 +1111,7 @@ npm test  # Already configured with --runInBand flag
 **Database state issues in tests**
 
 Clear test database and re-run:
+
 ```bash
 mongosh
 use peer-tutor-connect-test
@@ -1033,6 +1125,7 @@ npm test
 **Seed script fails partway through**
 
 1. Drop database and try again:
+
 ```bash
 mongosh
 use peer-tutor-connect
@@ -1049,6 +1142,7 @@ npm run seed
 - Check console output for errors during seeding
 - Verify database name in `.env` matches seed scripts
 - Connect to database and verify:
+
 ```bash
 mongosh
 use peer-tutor-connect
@@ -1063,6 +1157,7 @@ db.courses.countDocuments()
 
 1. Check MongoDB indexes are created (they are created automatically)
 2. Monitor MongoDB performance:
+
 ```bash
 mongosh
 use peer-tutor-connect
@@ -1090,6 +1185,7 @@ db.currentOp()
 ### Database Queries
 
 Use the data layer functions instead of direct MongoDB queries:
+
 ```javascript
 // Good
 import { getStudentById } from './data/students.js';
@@ -1103,12 +1199,13 @@ const student = await collection.findOne({ _id: new ObjectId(studentId) });
 ### Error Handling
 
 Always use try-catch in async route handlers:
+
 ```javascript
 router.get('/endpoint', requireAuth, async (req, res, next) => {
   try {
     // Your code here
   } catch (error) {
-    next(error);  // Let error middleware handle it
+    next(error); // Let error middleware handle it
   }
 });
 ```
@@ -1116,6 +1213,7 @@ router.get('/endpoint', requireAuth, async (req, res, next) => {
 ### Logging
 
 Request logging is automatic via `requestLogger` middleware. For custom logging:
+
 ```javascript
 console.log('[Info]:', message);
 console.error('[Error]:', error);
@@ -1128,24 +1226,28 @@ Production apps should use a proper logging library (Winston, Bunyan, Pino).
 Before deploying to production:
 
 1. **Environment Variables**
+
    - Set `NODE_ENV=production`
    - Use strong `SESSION_SECRET` (32+ random characters)
    - Update `MONGODB_URI` to production database
    - Update `FRONTEND_URL` to production frontend URL
 
 2. **Security**
+
    - Enable HTTPS (session cookies will use `secure` flag)
    - Consider adding rate limiting
    - Set up MongoDB authentication
    - Use environment-specific secrets management
 
 3. **Monitoring**
+
    - Set up application monitoring (New Relic, DataDog)
    - Configure error tracking (Sentry)
    - Set up MongoDB monitoring
    - Configure log aggregation
 
 4. **Database**
+
    - Create database indexes manually if needed
    - Set up regular backups
    - Configure replication for high availability

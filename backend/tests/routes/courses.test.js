@@ -7,7 +7,11 @@ import { jest } from '@jest/globals';
 import request from 'supertest';
 import bcrypt from 'bcrypt';
 import { ObjectId } from 'mongodb';
-import { connectToDb, closeConnection, getDb } from '../../database_config/index.js';
+import {
+  connectToDb,
+  closeConnection,
+  getDb,
+} from '../../database_config/index.js';
 import app from '../../app.js';
 
 describe('Courses Routes', () => {
@@ -99,19 +103,19 @@ describe('Courses Routes', () => {
 
     // Update courses with enrolled student
     for (const courseId of enrolledCourses) {
-      await db.collection('courses').updateOne(
-        { _id: courseId },
-        { $set: { enrolledStudents: [testStudent._id] } }
-      );
+      await db
+        .collection('courses')
+        .updateOne(
+          { _id: courseId },
+          { $set: { enrolledStudents: [testStudent._id] } }
+        );
     }
 
     // Login to get auth cookie
-    const loginResponse = await request(app)
-      .post('/api/auth/login')
-      .send({
-        universityEmail: 'test.student@stevens.edu',
-        password: 'password123',
-      });
+    const loginResponse = await request(app).post('/api/auth/login').send({
+      universityEmail: 'test.student@stevens.edu',
+      password: 'password123',
+    });
 
     authCookie = loginResponse.headers['set-cookie'];
   });
@@ -130,7 +134,7 @@ describe('Courses Routes', () => {
       expect(response.body.courses[0]).toHaveProperty('instructorName');
 
       // Should contain CS545 and CS590
-      const courseCodes = response.body.courses.map(c => c.courseCode);
+      const courseCodes = response.body.courses.map((c) => c.courseCode);
       expect(courseCodes).toContain('CS545');
       expect(courseCodes).toContain('CS590');
       expect(courseCodes).not.toContain('CS546'); // Not enrolled in this
@@ -152,12 +156,10 @@ describe('Courses Routes', () => {
       });
 
       // Login as this student
-      const loginResponse = await request(app)
-        .post('/api/auth/login')
-        .send({
-          universityEmail: 'no.courses@stevens.edu',
-          password: 'password123',
-        });
+      const loginResponse = await request(app).post('/api/auth/login').send({
+        universityEmail: 'no.courses@stevens.edu',
+        password: 'password123',
+      });
 
       const cookie = loginResponse.headers['set-cookie'];
 
@@ -172,12 +174,13 @@ describe('Courses Routes', () => {
     });
 
     it('should require authentication', async () => {
-      const response = await request(app)
-        .get('/api/courses');
+      const response = await request(app).get('/api/courses');
 
       expect(response.status).toBe(401);
       expect(response.body.success).toBe(false);
-      expect(response.body.error).toBe('Authentication required. Please log in.');
+      expect(response.body.error).toBe(
+        'Authentication required. Please log in.'
+      );
     });
 
     it('should return courses with all required fields', async () => {

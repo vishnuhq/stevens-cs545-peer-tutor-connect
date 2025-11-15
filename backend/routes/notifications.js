@@ -41,7 +41,10 @@ router.get(
       const studentId = req.session.student.id;
       const unreadOnly = req.query.unreadOnly === 'false' ? false : true;
 
-      const notifications = await getNotificationsByStudentId(studentId, unreadOnly);
+      const notifications = await getNotificationsByStudentId(
+        studentId,
+        unreadOnly
+      );
 
       res.json({
         success: true,

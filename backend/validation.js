@@ -45,7 +45,12 @@ export const isValidStevensEmail = (email) => {
  * @returns {string} Trimmed string
  * @throws {Error} If validation fails
  */
-export const validateString = (value, fieldName, minLength = 1, maxLength = 1000) => {
+export const validateString = (
+  value,
+  fieldName,
+  minLength = 1,
+  maxLength = 1000
+) => {
   if (value === undefined || value === null) {
     throw new Error(`${fieldName} is required`);
   }
@@ -71,7 +76,12 @@ export const validateString = (value, fieldName, minLength = 1, maxLength = 1000
  * @returns {number} Validated number
  * @throws {Error} If validation fails
  */
-export const validateNumber = (value, fieldName, min = -Infinity, max = Infinity) => {
+export const validateNumber = (
+  value,
+  fieldName,
+  min = -Infinity,
+  max = Infinity
+) => {
   if (value === undefined || value === null) {
     throw new Error(`${fieldName} is required`);
   }

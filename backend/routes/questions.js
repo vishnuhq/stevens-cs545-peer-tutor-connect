@@ -76,7 +76,9 @@ router.get(
       }
       return true;
     }),
-    query('sort').optional().isIn(['answered', 'unanswered', 'newest', 'oldest']),
+    query('sort')
+      .optional()
+      .isIn(['answered', 'unanswered', 'newest', 'oldest']),
   ],
   async (req, res, next) => {
     try {

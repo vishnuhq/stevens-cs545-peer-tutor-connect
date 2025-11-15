@@ -5,7 +5,11 @@
 
 import { jest } from '@jest/globals';
 import { ObjectId } from 'mongodb';
-import { connectToDb, closeConnection, getDb } from '../../database_config/index.js';
+import {
+  connectToDb,
+  closeConnection,
+  getDb,
+} from '../../database_config/index.js';
 import {
   createQuestion,
   getQuestionById,
@@ -49,7 +53,9 @@ describe('Question Data Functions', () => {
       expect(result.courseId.toString()).toBe(courseId);
       expect(result.posterId.toString()).toBe(posterId);
       expect(result.title).toBe('How do I implement binary search?');
-      expect(result.content).toBe('I am stuck on implementing binary search recursively.');
+      expect(result.content).toBe(
+        'I am stuck on implementing binary search recursively.'
+      );
       expect(result.isAnonymous).toBe(false);
       expect(result.isResolved).toBe(false);
       expect(result).toHaveProperty('createdAt');
@@ -216,7 +222,7 @@ describe('Question Data Functions', () => {
       const questions = await getQuestionsByCourseId(courseId, 'unanswered');
 
       expect(questions).toHaveLength(2);
-      expect(questions.every(q => !q.isResolved)).toBe(true);
+      expect(questions.every((q) => !q.isResolved)).toBe(true);
     });
 
     it('should return empty array if no questions for course', async () => {
@@ -242,7 +248,7 @@ describe('Question Data Functions', () => {
       });
 
       // Wait a moment to ensure different timestamp
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10));
 
       const updates = {
         title: 'Updated Title',
@@ -339,7 +345,9 @@ describe('Question Data Functions', () => {
 
     it('should throw error if question not found', async () => {
       const fakeId = '507f1f77bcf86cd799439011';
-      await expect(deleteQuestion(fakeId)).rejects.toThrow('Question not found');
+      await expect(deleteQuestion(fakeId)).rejects.toThrow(
+        'Question not found'
+      );
     });
   });
 });

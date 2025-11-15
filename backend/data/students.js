@@ -30,7 +30,10 @@ export const createStudent = async (studentData) => {
   // Validate required fields
   const firstName = validateString(studentData.firstName, 'First name', 1, 50);
   const lastName = validateString(studentData.lastName, 'Last name', 1, 50);
-  const universityEmail = validateString(studentData.universityEmail, 'University email');
+  const universityEmail = validateString(
+    studentData.universityEmail,
+    'University email'
+  );
   const hashedPassword = validateString(studentData.hashedPassword, 'Password');
   const major = validateString(studentData.major, 'Major', 1, 100);
   const age = validateNumber(studentData.age, 'Age', 17, 25);
@@ -43,7 +46,10 @@ export const createStudent = async (studentData) => {
   // Validate enrolled courses (optional)
   let enrolledCourses = [];
   if (studentData.enrolledCourses) {
-    enrolledCourses = validateArray(studentData.enrolledCourses, 'Enrolled courses');
+    enrolledCourses = validateArray(
+      studentData.enrolledCourses,
+      'Enrolled courses'
+    );
     for (const courseId of enrolledCourses) {
       if (!isValidObjectId(courseId)) {
         throw new Error(`Invalid course ID: ${courseId}`);
@@ -69,7 +75,7 @@ export const createStudent = async (studentData) => {
     hashedPassword,
     major,
     age,
-    enrolledCourses: enrolledCourses.map(id => new ObjectId(id)),
+    enrolledCourses: enrolledCourses.map((id) => new ObjectId(id)),
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -98,7 +104,9 @@ export const getStudentById = async (studentId) => {
   }
 
   const studentsCollection = getCollection(COLLECTIONS.STUDENTS);
-  const student = await studentsCollection.findOne({ _id: new ObjectId(studentId) });
+  const student = await studentsCollection.findOne({
+    _id: new ObjectId(studentId),
+  });
 
   return student;
 };
@@ -150,7 +158,13 @@ export const updateStudent = async (studentId, updates) => {
     throw new Error('No updates provided');
   }
 
-  const allowedUpdates = ['firstName', 'lastName', 'major', 'age', 'enrolledCourses'];
+  const allowedUpdates = [
+    'firstName',
+    'lastName',
+    'major',
+    'age',
+    'enrolledCourses',
+  ];
   const updateFields = {};
 
   // Validate and process each update field
@@ -172,7 +186,7 @@ export const updateStudent = async (studentId, updates) => {
           throw new Error(`Invalid course ID: ${courseId}`);
         }
       }
-      updateFields[key] = courses.map(id => new ObjectId(id));
+      updateFields[key] = courses.map((id) => new ObjectId(id));
     }
   }
 
@@ -204,7 +218,9 @@ export const deleteStudent = async (studentId) => {
   }
 
   const studentsCollection = getCollection(COLLECTIONS.STUDENTS);
-  const result = await studentsCollection.deleteOne({ _id: new ObjectId(studentId) });
+  const result = await studentsCollection.deleteOne({
+    _id: new ObjectId(studentId),
+  });
 
   if (result.deletedCount === 0) {
     throw new Error('Student not found');

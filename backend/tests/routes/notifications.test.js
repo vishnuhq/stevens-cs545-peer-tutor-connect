@@ -7,7 +7,11 @@ import { jest } from '@jest/globals';
 import request from 'supertest';
 import bcrypt from 'bcrypt';
 import { ObjectId } from 'mongodb';
-import { connectToDb, closeConnection, getDb } from '../../database_config/index.js';
+import {
+  connectToDb,
+  closeConnection,
+  getDb,
+} from '../../database_config/index.js';
 import app from '../../app.js';
 
 describe('Notifications Routes', () => {
@@ -80,12 +84,10 @@ describe('Notifications Routes', () => {
     ]);
 
     // Login
-    const loginResponse = await request(app)
-      .post('/api/auth/login')
-      .send({
-        universityEmail: 'test.student@stevens.edu',
-        password: 'password123',
-      });
+    const loginResponse = await request(app).post('/api/auth/login').send({
+      universityEmail: 'test.student@stevens.edu',
+      password: 'password123',
+    });
     authCookie = loginResponse.headers['set-cookie'];
   });
 
@@ -98,7 +100,7 @@ describe('Notifications Routes', () => {
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
       expect(response.body.notifications).toHaveLength(2);
-      expect(response.body.notifications.every(n => !n.isRead)).toBe(true);
+      expect(response.body.notifications.every((n) => !n.isRead)).toBe(true);
     });
 
     it('should return all notifications when unreadOnly=false', async () => {
@@ -111,8 +113,7 @@ describe('Notifications Routes', () => {
     });
 
     it('should require authentication', async () => {
-      const response = await request(app)
-        .get('/api/notifications');
+      const response = await request(app).get('/api/notifications');
 
       expect(response.status).toBe(401);
     });
@@ -143,13 +144,16 @@ describe('Notifications Routes', () => {
       expect(response.body.success).toBe(true);
 
       // Verify marked as read
-      const notification = await db.collection('notifications').findOne({ _id: notificationId });
+      const notification = await db
+        .collection('notifications')
+        .findOne({ _id: notificationId });
       expect(notification.isRead).toBe(true);
     });
 
     it('should require authentication', async () => {
-      const response = await request(app)
-        .patch(`/api/notifications/${notificationId}/read`);
+      const response = await request(app).patch(
+        `/api/notifications/${notificationId}/read`
+      );
 
       expect(response.status).toBe(401);
     });
@@ -173,8 +177,7 @@ describe('Notifications Routes', () => {
     });
 
     it('should require authentication', async () => {
-      const response = await request(app)
-        .patch('/api/notifications/read-all');
+      const response = await request(app).patch('/api/notifications/read-all');
 
       expect(response.status).toBe(401);
     });

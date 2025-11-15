@@ -5,10 +5,7 @@
 
 import { ObjectId } from 'mongodb';
 import { getCollection, COLLECTIONS } from '../database_config/index.js';
-import {
-  validateString,
-  isValidObjectId,
-} from '../validation.js';
+import { validateString, isValidObjectId } from '../validation.js';
 
 /**
  * Creates a new notification in the database
@@ -86,7 +83,10 @@ export const getNotificationById = async (notificationId) => {
  * @returns {Promise<Array>} Array of notification documents
  * @throws {Error} If studentId is invalid
  */
-export const getNotificationsByStudentId = async (studentId, unreadOnly = true) => {
+export const getNotificationsByStudentId = async (
+  studentId,
+  unreadOnly = true
+) => {
   if (!isValidObjectId(studentId)) {
     throw new Error('Invalid student ID');
   }

@@ -32,9 +32,8 @@ export const createQuestion = async (questionData) => {
   const title = validateString(questionData.title, 'Title', 1, 200);
   const content = validateString(questionData.content, 'Content', 1, 2000);
 
-  const isAnonymous = questionData.isAnonymous !== undefined
-    ? questionData.isAnonymous
-    : false;
+  const isAnonymous =
+    questionData.isAnonymous !== undefined ? questionData.isAnonymous : false;
 
   if (typeof isAnonymous !== 'boolean') {
     throw new Error('isAnonymous must be a boolean');
@@ -79,35 +78,37 @@ export const getQuestionById = async (questionId) => {
   const questionsCollection = getCollection(COLLECTIONS.QUESTIONS);
 
   // Use aggregation to populate poster information
-  const questions = await questionsCollection.aggregate([
-    { $match: { _id: new ObjectId(questionId) } },
-    {
-      $lookup: {
-        from: 'students',
-        localField: 'posterId',
-        foreignField: '_id',
-        as: 'poster'
-      }
-    },
-    {
-      $addFields: {
-        posterName: {
-          $cond: {
-            if: '$isAnonymous',
-            then: 'Anonymous',
-            else: {
-              $concat: [
-                { $arrayElemAt: ['$poster.firstName', 0] },
-                ' ',
-                { $arrayElemAt: ['$poster.lastName', 0] }
-              ]
-            }
-          }
-        }
-      }
-    },
-    { $project: { poster: 0 } } // Remove full poster object
-  ]).toArray();
+  const questions = await questionsCollection
+    .aggregate([
+      { $match: { _id: new ObjectId(questionId) } },
+      {
+        $lookup: {
+          from: 'students',
+          localField: 'posterId',
+          foreignField: '_id',
+          as: 'poster',
+        },
+      },
+      {
+        $addFields: {
+          posterName: {
+            $cond: {
+              if: '$isAnonymous',
+              then: 'Anonymous',
+              else: {
+                $concat: [
+                  { $arrayElemAt: ['$poster.firstName', 0] },
+                  ' ',
+                  { $arrayElemAt: ['$poster.lastName', 0] },
+                ],
+              },
+            },
+          },
+        },
+      },
+      { $project: { poster: 0 } }, // Remove full poster object
+    ])
+    .toArray();
 
   return questions.length > 0 ? questions[0] : null;
 };
@@ -119,7 +120,10 @@ export const getQuestionById = async (questionId) => {
  * @returns {Promise<Array>} Array of question documents
  * @throws {Error} If courseId is invalid
  */
-export const getQuestionsByCourseId = async (courseId, sortOption = 'newest') => {
+export const getQuestionsByCourseId = async (
+  courseId,
+  sortOption = 'newest'
+) => {
   if (!isValidObjectId(courseId)) {
     throw new Error('Invalid course ID');
   }
@@ -149,36 +153,38 @@ export const getQuestionsByCourseId = async (courseId, sortOption = 'newest') =>
   }
 
   // Use aggregation to populate poster information
-  const questions = await questionsCollection.aggregate([
-    { $match: matchStage },
-    {
-      $lookup: {
-        from: 'students',
-        localField: 'posterId',
-        foreignField: '_id',
-        as: 'poster'
-      }
-    },
-    {
-      $addFields: {
-        posterName: {
-          $cond: {
-            if: '$isAnonymous',
-            then: 'Anonymous',
-            else: {
-              $concat: [
-                { $arrayElemAt: ['$poster.firstName', 0] },
-                ' ',
-                { $arrayElemAt: ['$poster.lastName', 0] }
-              ]
-            }
-          }
-        }
-      }
-    },
-    { $project: { poster: 0 } }, // Remove full poster object
-    { $sort: sortStage }
-  ]).toArray();
+  const questions = await questionsCollection
+    .aggregate([
+      { $match: matchStage },
+      {
+        $lookup: {
+          from: 'students',
+          localField: 'posterId',
+          foreignField: '_id',
+          as: 'poster',
+        },
+      },
+      {
+        $addFields: {
+          posterName: {
+            $cond: {
+              if: '$isAnonymous',
+              then: 'Anonymous',
+              else: {
+                $concat: [
+                  { $arrayElemAt: ['$poster.firstName', 0] },
+                  ' ',
+                  { $arrayElemAt: ['$poster.lastName', 0] },
+                ],
+              },
+            },
+          },
+        },
+      },
+      { $project: { poster: 0 } }, // Remove full poster object
+      { $sort: sortStage },
+    ])
+    .toArray();
 
   return questions;
 };
@@ -248,7 +254,9 @@ export const deleteQuestion = async (questionId) => {
   }
 
   const questionsCollection = getCollection(COLLECTIONS.QUESTIONS);
-  const result = await questionsCollection.deleteOne({ _id: new ObjectId(questionId) });
+  const result = await questionsCollection.deleteOne({
+    _id: new ObjectId(questionId),
+  });
 
   if (result.deletedCount === 0) {
     throw new Error('Question not found');

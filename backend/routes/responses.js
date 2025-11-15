@@ -111,7 +111,9 @@ router.post(
       try {
         const question = await getQuestionById(questionId);
         if (question && question.posterId.toString() !== posterId) {
-          const responderName = isAnonymous ? 'Someone' : req.session.student.firstName;
+          const responderName = isAnonymous
+            ? 'Someone'
+            : req.session.student.firstName;
           await createNotification({
             recipientId: question.posterId.toString(),
             questionId: questionId,
@@ -267,9 +269,7 @@ router.patch(
       }
       return true;
     }),
-    body('isHelpful')
-      .isBoolean()
-      .withMessage('isHelpful must be a boolean'),
+    body('isHelpful').isBoolean().withMessage('isHelpful must be a boolean'),
   ],
   async (req, res, next) => {
     try {
@@ -299,7 +299,9 @@ router.patch(
       // Create notification when response is marked as helpful (not unmarked)
       if (isHelpful && response.posterId.toString() !== currentUserId) {
         try {
-          const question = await getQuestionById(response.questionId.toString());
+          const question = await getQuestionById(
+            response.questionId.toString()
+          );
           if (question) {
             await createNotification({
               recipientId: response.posterId.toString(),

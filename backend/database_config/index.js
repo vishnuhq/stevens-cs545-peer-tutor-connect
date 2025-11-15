@@ -26,10 +26,4 @@ const COLLECTIONS = {
   NOTIFICATIONS: 'notifications',
 };
 
-export {
-  connectToDb,
-  getDb,
-  closeConnection,
-  getCollection,
-  COLLECTIONS,
-};
+export { connectToDb, getDb, closeConnection, getCollection, COLLECTIONS };

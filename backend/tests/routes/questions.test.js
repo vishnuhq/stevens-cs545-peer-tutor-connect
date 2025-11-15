@@ -7,7 +7,11 @@ import { jest } from '@jest/globals';
 import request from 'supertest';
 import bcrypt from 'bcrypt';
 import { ObjectId } from 'mongodb';
-import { connectToDb, closeConnection, getDb } from '../../database_config/index.js';
+import {
+  connectToDb,
+  closeConnection,
+  getDb,
+} from '../../database_config/index.js';
 import app from '../../app.js';
 
 describe('Questions Routes', () => {
@@ -81,20 +85,16 @@ describe('Questions Routes', () => {
     otherStudent = student2Result.insertedId;
 
     // Login both students
-    const login1 = await request(app)
-      .post('/api/auth/login')
-      .send({
-        universityEmail: 'test.student@stevens.edu',
-        password: 'password123',
-      });
+    const login1 = await request(app).post('/api/auth/login').send({
+      universityEmail: 'test.student@stevens.edu',
+      password: 'password123',
+    });
     authCookie = login1.headers['set-cookie'];
 
-    const login2 = await request(app)
-      .post('/api/auth/login')
-      .send({
-        universityEmail: 'other.student@stevens.edu',
-        password: 'password123',
-      });
+    const login2 = await request(app).post('/api/auth/login').send({
+      universityEmail: 'other.student@stevens.edu',
+      password: 'password123',
+    });
     otherAuthCookie = login2.headers['set-cookie'];
   });
 
@@ -175,12 +175,11 @@ describe('Questions Routes', () => {
 
       expect(response.status).toBe(200);
       expect(response.body.questions).toHaveLength(2);
-      expect(response.body.questions.every(q => !q.isResolved)).toBe(true);
+      expect(response.body.questions.every((q) => !q.isResolved)).toBe(true);
     });
 
     it('should require authentication', async () => {
-      const response = await request(app)
-        .get(`/api/questions/${testCourse}`);
+      const response = await request(app).get(`/api/questions/${testCourse}`);
 
       expect(response.status).toBe(401);
     });
@@ -234,13 +233,11 @@ describe('Questions Routes', () => {
     });
 
     it('should require authentication', async () => {
-      const response = await request(app)
-        .post('/api/questions')
-        .send({
-          courseId: testCourse.toString(),
-          title: 'Test',
-          content: 'Test',
-        });
+      const response = await request(app).post('/api/questions').send({
+        courseId: testCourse.toString(),
+        title: 'Test',
+        content: 'Test',
+      });
 
       expect(response.status).toBe(401);
     });
@@ -332,7 +329,9 @@ describe('Questions Routes', () => {
       expect(response.body.success).toBe(true);
 
       // Verify deletion
-      const found = await db.collection('questions').findOne({ _id: questionId });
+      const found = await db
+        .collection('questions')
+        .findOne({ _id: questionId });
       expect(found).toBeNull();
     });
 
@@ -345,8 +344,9 @@ describe('Questions Routes', () => {
     });
 
     it('should require authentication', async () => {
-      const response = await request(app)
-        .delete(`/api/questions/${questionId}`);
+      const response = await request(app).delete(
+        `/api/questions/${questionId}`
+      );
 
       expect(response.status).toBe(401);
     });

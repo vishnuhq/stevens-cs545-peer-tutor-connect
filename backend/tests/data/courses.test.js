@@ -4,7 +4,11 @@
  */
 
 import { jest } from '@jest/globals';
-import { connectToDb, closeConnection, getDb } from '../../database_config/index.js';
+import {
+  connectToDb,
+  closeConnection,
+  getDb,
+} from '../../database_config/index.js';
 import {
   createCourse,
   getCourseById,
@@ -241,9 +245,9 @@ describe('Course Data Functions', () => {
       const courses = await getCoursesByStudentId(studentId);
 
       expect(courses).toHaveLength(2);
-      expect(courses.map(c => c.courseCode)).toContain('CS545');
-      expect(courses.map(c => c.courseCode)).toContain('CS590');
-      expect(courses.map(c => c.courseCode)).not.toContain('CS555');
+      expect(courses.map((c) => c.courseCode)).toContain('CS545');
+      expect(courses.map((c) => c.courseCode)).toContain('CS590');
+      expect(courses.map((c) => c.courseCode)).not.toContain('CS555');
     });
 
     it('should return empty array if student not enrolled in any courses', async () => {
