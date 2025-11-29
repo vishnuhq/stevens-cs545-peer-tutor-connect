@@ -17,7 +17,6 @@ import {
   MessageSquare,
   Star,
   ChevronRight,
-  AlertCircle,
   X,
 } from 'lucide-react';
 import Header from './Header';
@@ -89,7 +88,6 @@ const QuestionDetail = () => {
   const [course, setCourse] = useState(null);
   const [responses, setResponses] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isSortingResponses, setIsSortingResponses] = useState(false); // Track if we're just sorting responses
   const [showResponseForm, setShowResponseForm] = useState(false);
   const [editingResponseId, setEditingResponseId] = useState(null);
   const [sortResponses, setSortResponses] = useState('newest');
@@ -119,11 +117,9 @@ const QuestionDetail = () => {
 
   const fetchQuestion = async () => {
     try {
-      // Only show loading spinner on initial load, not when sorting responses
+      // Only show loading spinner on initial load
       if (!question) {
         setLoading(true);
-      } else {
-        setIsSortingResponses(true);
       }
       const questionResponse = await questionsApi.getQuestionById(questionId);
       setQuestion(questionResponse.data.question);
@@ -152,7 +148,6 @@ const QuestionDetail = () => {
       setTimeout(() => navigate('/courses'), 2000);
     } finally {
       setLoading(false);
-      setIsSortingResponses(false);
     }
   };
 
@@ -305,17 +300,17 @@ const QuestionDetail = () => {
           className="bg-white shadow-md border-2 border-gray-200"
           style={{
             borderRadius: '1rem',
-            padding: '2.5rem',
-            marginBottom: '2rem',
+            padding: '1.5rem',
+            marginBottom: '1.5rem',
           }}
         >
           {/* Question Header */}
           <div
-            className="flex items-start justify-between"
-            style={{ gap: '1rem', marginBottom: '1.5rem' }}
+            className="flex items-center justify-between"
+            style={{ gap: '1rem', marginBottom: '0.75rem' }}
           >
             <h1
-              className="font-bold text-gray-900 leading-tight text-2xl sm:text-4xl"
+              className="font-bold text-gray-900 leading-tight text-lg sm:text-2xl"
               style={{ flex: 1 }}
             >
               {question.title}
@@ -326,168 +321,240 @@ const QuestionDetail = () => {
               <div
                 className="flex items-center bg-gradient-to-r from-emerald-50 to-green-50 text-green-700 border border-green-200 font-semibold flex-shrink-0"
                 style={{
-                  gap: '0.375rem',
-                  padding: '0.5rem 1rem',
-                  borderRadius: '0.75rem',
-                  fontSize: '0.875rem',
+                  gap: '0.25rem',
+                  padding: '0.25rem 0.625rem',
+                  borderRadius: '0.5rem',
+                  fontSize: '0.75rem',
                 }}
               >
-                <CheckCircle style={{ width: '1.25rem', height: '1.25rem' }} />
+                <CheckCircle style={{ width: '1rem', height: '1rem' }} />
                 Answered
               </div>
             )}
           </div>
 
           {/* Question Content */}
-          <div className="prose max-w-none" style={{ marginBottom: '2rem' }}>
+          <div className="prose max-w-none" style={{ marginBottom: '1rem' }}>
             <p
               className="text-gray-700 leading-relaxed whitespace-pre-wrap"
-              style={{ fontSize: '1.125rem' }}
+              style={{ fontSize: '1.0625rem' }}
             >
               {question.content}
             </p>
           </div>
 
-          {/* Question Meta */}
+          {/* Question Meta + Actions - Responsive: stack on mobile, row on desktop */}
           <div
-            className="flex items-center border-b border-gray-200"
-            style={{
-              gap: '1.25rem',
-              fontSize: '0.875rem',
-              paddingBottom: '1.5rem',
-              marginBottom: '1.5rem',
-            }}
+            className="flex flex-col sm:flex-row sm:items-center sm:justify-between"
+            style={{ gap: '0.75rem', fontSize: '0.75rem' }}
           >
-            <div className="flex items-center" style={{ gap: '0.75rem' }}>
+            {/* Left: Poster info */}
+            <div
+              className="flex items-center text-gray-600"
+              style={{ gap: '0.5rem' }}
+            >
               <div
                 className="bg-gradient-to-br from-teal-600 to-emerald-600 flex items-center justify-center flex-shrink-0"
                 style={{
-                  width: '2.5rem',
-                  height: '2.5rem',
+                  width: '1.5rem',
+                  height: '1.5rem',
                   borderRadius: '50%',
                 }}
               >
                 <span
                   className="text-white font-bold"
-                  style={{ fontSize: '0.875rem' }}
+                  style={{ fontSize: '0.625rem' }}
                 >
                   {question.isAnonymous
                     ? 'A'
                     : (question.posterName || 'U').charAt(0).toUpperCase()}
                 </span>
               </div>
-              <div>
-                <p className="font-semibold text-gray-900">
-                  {question.isAnonymous
-                    ? 'Anonymous'
-                    : question.posterName || 'Unknown'}
-                </p>
-                <p className="text-gray-500">
-                  {formatDistanceToNow(new Date(question.createdAt), {
-                    addSuffix: true,
-                  })}
-                </p>
-              </div>
+              <span className="font-medium text-gray-700">
+                {question.isAnonymous
+                  ? 'Anonymous'
+                  : question.posterName || 'Unknown'}
+              </span>
+              <span className="text-gray-400">•</span>
+              <span className="text-gray-500">
+                {formatDistanceToNow(new Date(question.createdAt), {
+                  addSuffix: true,
+                })}
+              </span>
             </div>
-          </div>
 
-          {/* Question Actions */}
-          {isQuestionPoster && (
-            <div
-              className="flex items-center flex-wrap"
-              style={{ gap: '1rem' }}
-            >
-              <button
-                onClick={handleToggleResolved}
-                className="flex items-center border-2 border-teal-300 bg-teal-50 hover:bg-teal-100 text-teal-700 font-semibold transition-colors"
-                style={{
-                  gap: '0.5rem',
-                  padding: '0.625rem 1rem',
-                  borderRadius: '0.5rem',
-                  fontSize: '0.875rem',
-                }}
+            {/* Right: Action buttons (if poster) */}
+            {isQuestionPoster && (
+              <div
+                className="flex items-center flex-wrap"
+                style={{ gap: '0.5rem' }}
               >
-                {question.isResolved ? (
-                  <>
-                    <Circle style={{ width: '1rem', height: '1rem' }} />
-                    Mark as Unresolved
-                  </>
-                ) : (
-                  <>
-                    <CheckCircle style={{ width: '1rem', height: '1rem' }} />
-                    Mark as Resolved
-                  </>
-                )}
-              </button>
-              <button
-                onClick={() => navigate(`/questions/${questionId}/edit`)}
-                className="flex items-center border-2 border-gray-300 bg-gray-50 hover:bg-gray-100 text-gray-700 font-semibold transition-colors"
-                style={{
-                  gap: '0.5rem',
-                  padding: '0.625rem 1rem',
-                  borderRadius: '0.5rem',
-                  fontSize: '0.875rem',
-                }}
-              >
-                <Edit style={{ width: '1rem', height: '1rem' }} />
-                Edit Question
-              </button>
-              <button
-                onClick={() =>
-                  setDeleteModal({
-                    isOpen: true,
-                    type: 'question',
-                    id: questionId,
-                  })
-                }
-                className="flex items-center border-2 border-red-300 bg-red-50 hover:bg-red-100 text-red-600 font-semibold transition-colors"
-                style={{
-                  gap: '0.5rem',
-                  padding: '0.625rem 1rem',
-                  borderRadius: '0.5rem',
-                  fontSize: '0.875rem',
-                }}
-              >
-                <Trash2 style={{ width: '1rem', height: '1rem' }} />
-                Delete Question
-              </button>
-            </div>
-          )}
+                <button
+                  onClick={handleToggleResolved}
+                  className="flex items-center border border-teal-200 bg-gradient-to-r from-teal-50 to-emerald-50 hover:from-teal-100 hover:to-emerald-100 text-teal-700 font-semibold transition-colors"
+                  style={{
+                    gap: '0.25rem',
+                    padding: '0.25rem 0.625rem',
+                    borderRadius: '0.5rem',
+                    fontSize: '0.75rem',
+                  }}
+                >
+                  {question.isResolved ? (
+                    <>
+                      <Circle style={{ width: '1rem', height: '1rem' }} />
+                      Mark as Unresolved
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle style={{ width: '1rem', height: '1rem' }} />
+                      Mark as Resolved
+                    </>
+                  )}
+                </button>
+                <button
+                  onClick={() => navigate(`/questions/${questionId}/edit`)}
+                  className="flex items-center border border-gray-200 bg-gradient-to-r from-gray-50 to-slate-50 hover:from-gray-100 hover:to-slate-100 text-gray-700 font-semibold transition-colors"
+                  style={{
+                    gap: '0.25rem',
+                    padding: '0.25rem 0.625rem',
+                    borderRadius: '0.5rem',
+                    fontSize: '0.75rem',
+                  }}
+                >
+                  <Edit style={{ width: '1rem', height: '1rem' }} />
+                  Edit
+                </button>
+                <button
+                  onClick={() =>
+                    setDeleteModal({
+                      isOpen: true,
+                      type: 'question',
+                      id: questionId,
+                    })
+                  }
+                  className="flex items-center border border-red-200 bg-gradient-to-r from-red-50 to-rose-50 hover:from-red-100 hover:to-rose-100 text-red-600 font-semibold transition-colors"
+                  style={{
+                    gap: '0.25rem',
+                    padding: '0.25rem 0.625rem',
+                    borderRadius: '0.5rem',
+                    fontSize: '0.75rem',
+                  }}
+                >
+                  <Trash2 style={{ width: '1rem', height: '1rem' }} />
+                  Delete
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Responses Section */}
         <div
           className="bg-white shadow-md border-2 border-gray-200"
-          style={{ borderRadius: '1rem', padding: '2.5rem' }}
+          style={{ borderRadius: '1rem', padding: '1.5rem' }}
         >
+          {/* Responses Header - Responsive layout */}
+          {/* Desktop: Responses + Sort by (left) | Reply (right) - all one line */}
+          {/* Mobile: Responses + Reply (top) | Sort by (below) */}
           <div
-            className="flex items-center justify-between"
-            style={{ marginBottom: '2rem' }}
+            className="flex flex-wrap items-center justify-between"
+            style={{ marginBottom: '0.75rem', gap: '0.75rem' }}
           >
-            <h2 className="font-bold text-gray-900 text-xl sm:text-3xl">
-              Responses ({responses.length})
-            </h2>
-            {!showResponseForm && (
+            {/* Left side: Responses + Sort by (desktop inline) */}
+            <div className="flex items-center" style={{ gap: '1rem' }}>
+              <h2
+                className="font-bold text-gray-900"
+                style={{ fontSize: '1.0625rem' }}
+              >
+                Responses ({responses.length})
+              </h2>
+
+              {/* Sort dropdown - desktop only (inline with Responses) */}
+              {responses.length > 0 &&
+                !showResponseForm &&
+                !editingResponseId && (
+                  <div
+                    className="hidden sm:flex items-center"
+                    style={{ gap: '0.5rem' }}
+                  >
+                    <label
+                      htmlFor="sortResponses"
+                      className="text-gray-700 font-semibold"
+                      style={{ fontSize: '0.9375rem' }}
+                    >
+                      Sort by:
+                    </label>
+                    <select
+                      id="sortResponses"
+                      value={sortResponses}
+                      onChange={handleSortResponsesChange}
+                      className="border border-gray-300 bg-gray-50 hover:bg-gray-100 focus:ring-2 focus:ring-teal-500 font-medium transition-colors"
+                      style={{
+                        padding: '0.375rem 0.5rem',
+                        borderRadius: '0.375rem',
+                        fontSize: '0.9375rem',
+                      }}
+                    >
+                      <option value="newest">Newest First</option>
+                      <option value="oldest">Oldest First</option>
+                    </select>
+                  </div>
+                )}
+            </div>
+
+            {/* Right side: Reply button */}
+            {!showResponseForm && !editingResponseId && (
               <button
                 onClick={() => setShowResponseForm(true)}
-                className="flex items-center bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white font-semibold shadow-lg transition-all"
+                className="flex items-center bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all"
                 style={{
                   gap: '0.5rem',
-                  padding: '0.75rem 1.5rem',
-                  borderRadius: '0.75rem',
+                  padding: '0.625rem 1.5rem',
+                  borderRadius: '0.625rem',
+                  fontSize: '0.9375rem',
                 }}
               >
                 <MessageSquare
-                  style={{ width: '1.25rem', height: '1.25rem' }}
+                  style={{ width: '1.125rem', height: '1.125rem' }}
                 />
                 Reply
               </button>
             )}
           </div>
 
+          {/* Mobile only: Sort dropdown below */}
+          {responses.length > 0 && !showResponseForm && !editingResponseId && (
+            <div
+              className="flex sm:hidden items-center"
+              style={{ gap: '0.5rem', marginBottom: '1rem' }}
+            >
+              <label
+                htmlFor="sortResponsesMobile"
+                className="text-gray-700 font-semibold"
+                style={{ fontSize: '0.9375rem' }}
+              >
+                Sort by:
+              </label>
+              <select
+                id="sortResponsesMobile"
+                value={sortResponses}
+                onChange={handleSortResponsesChange}
+                className="border border-gray-300 bg-gray-50 hover:bg-gray-100 focus:ring-2 focus:ring-teal-500 font-medium transition-colors"
+                style={{
+                  padding: '0.375rem 0.5rem',
+                  borderRadius: '0.375rem',
+                  fontSize: '0.9375rem',
+                }}
+              >
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+              </select>
+            </div>
+          )}
+
           {/* Response Form */}
           {(showResponseForm || editingResponseId) && (
-            <div ref={responseFormRef} style={{ marginBottom: '2rem' }}>
+            <div ref={responseFormRef} style={{ marginBottom: '1.5rem' }}>
               <ResponseForm
                 questionId={questionId}
                 responseId={editingResponseId}
@@ -506,32 +573,31 @@ const QuestionDetail = () => {
             </div>
           )}
 
-          {/* Sort Responses */}
-          {responses.length > 0 && (
+          {/* Sort dropdown - moves here when form is open */}
+          {(showResponseForm || editingResponseId) && responses.length > 0 && (
             <div
-              className="flex items-center border-b border-gray-200"
+              className="flex items-center"
               style={{
-                gap: '1rem',
-                paddingBottom: '1.5rem',
-                marginBottom: '1.5rem',
+                gap: '0.5rem',
+                marginBottom: '1rem',
               }}
             >
               <label
-                htmlFor="sortResponses"
+                htmlFor="sortResponsesAlt"
                 className="text-gray-700 font-semibold"
-                style={{ fontSize: '0.875rem' }}
+                style={{ fontSize: '1.0625rem' }}
               >
                 Sort by:
               </label>
               <select
-                id="sortResponses"
+                id="sortResponsesAlt"
                 value={sortResponses}
                 onChange={handleSortResponsesChange}
-                className="border-2 border-gray-300 bg-gray-50 hover:bg-gray-100 focus:ring-2 focus:ring-teal-500 font-medium transition-colors"
+                className="border border-gray-300 bg-gray-50 hover:bg-gray-100 focus:ring-2 focus:ring-teal-500 font-medium transition-colors"
                 style={{
-                  padding: '0.5rem 0.75rem',
-                  borderRadius: '0.5rem',
-                  fontSize: '0.875rem',
+                  padding: '0.375rem 0.5rem',
+                  borderRadius: '0.375rem',
+                  fontSize: '1.0625rem',
                 }}
               >
                 <option value="newest">Newest First</option>
@@ -570,29 +636,48 @@ const QuestionDetail = () => {
                 return (
                   <div
                     key={response._id}
-                    className="border-2 border-gray-200 bg-gray-50/50"
-                    style={{ borderRadius: '0.5rem', padding: '0.875rem 1rem' }}
+                    className={`border ${
+                      response.isHelpful
+                        ? 'border-yellow-300 bg-yellow-50/30'
+                        : 'border-gray-200 bg-gray-50/50'
+                    }`}
+                    style={{
+                      borderRadius: '0.375rem',
+                      padding: '0.75rem 1rem',
+                    }}
                   >
-                    {/* Response Header */}
-                    <div
-                      className="flex items-start justify-between"
-                      style={{ marginBottom: '0.5rem' }}
+                    {/* Response Content - First */}
+                    <p
+                      className="text-gray-900 leading-relaxed whitespace-pre-wrap"
+                      style={{
+                        fontSize: '0.9375rem',
+                        marginBottom: '0.5rem',
+                      }}
                     >
+                      {response.content}
+                    </p>
+
+                    {/* Bottom line: Poster + Time + Actions - Responsive */}
+                    <div
+                      className="flex flex-col sm:flex-row sm:items-center sm:justify-between"
+                      style={{ gap: '0.5rem', fontSize: '0.75rem' }}
+                    >
+                      {/* Left: Avatar + Name + Time + Helpful badge */}
                       <div
-                        className="flex items-center"
-                        style={{ gap: '0.5rem' }}
+                        className="flex items-center text-gray-600"
+                        style={{ gap: '0.375rem' }}
                       >
                         <div
-                          className="bg-gradient-to-br from-teal-600 to-emerald-600 flex items-center justify-center"
+                          className="bg-gradient-to-br from-teal-600 to-emerald-600 flex items-center justify-center flex-shrink-0"
                           style={{
-                            width: '1.75rem',
-                            height: '1.75rem',
+                            width: '1.25rem',
+                            height: '1.25rem',
                             borderRadius: '50%',
                           }}
                         >
                           <span
                             className="text-white font-bold"
-                            style={{ fontSize: '0.75rem' }}
+                            style={{ fontSize: '0.5rem' }}
                           >
                             {response.isAnonymous
                               ? 'A'
@@ -601,128 +686,110 @@ const QuestionDetail = () => {
                                   .toUpperCase()}
                           </span>
                         </div>
-                        <div>
-                          <p
-                            className="font-semibold text-gray-900"
-                            style={{ fontSize: '0.875rem' }}
-                          >
-                            {response.isAnonymous
-                              ? 'Anonymous'
-                              : response.posterName || 'Unknown'}
-                          </p>
-                          <p
-                            className="text-gray-500"
-                            style={{ fontSize: '0.75rem' }}
-                          >
-                            {formatDistanceToNow(new Date(response.createdAt), {
-                              addSuffix: true,
-                            })}
-                          </p>
-                        </div>
+                        <span className="font-medium text-gray-700">
+                          {response.isAnonymous
+                            ? 'Anonymous'
+                            : response.posterName || 'Unknown'}
+                        </span>
+                        <span className="text-gray-400">•</span>
+                        <span className="text-gray-500">
+                          {formatDistanceToNow(new Date(response.createdAt), {
+                            addSuffix: true,
+                          })}
+                        </span>
+                        {response.isHelpful && (
+                          <>
+                            <span className="text-gray-400">•</span>
+                            <div
+                              className="flex items-center bg-yellow-100 text-yellow-700 font-semibold"
+                              style={{
+                                gap: '0.25rem',
+                                padding: '0.125rem 0.375rem',
+                                borderRadius: '0.25rem',
+                                fontSize: '0.6875rem',
+                              }}
+                            >
+                              <Star
+                                style={{ width: '0.75rem', height: '0.75rem' }}
+                              />
+                              Helpful
+                            </div>
+                          </>
+                        )}
                       </div>
 
-                      {/* Helpful Badge */}
-                      {response.isHelpful && (
-                        <div
-                          className="flex items-center bg-yellow-100 text-yellow-700 font-semibold"
-                          style={{
-                            gap: '0.25rem',
-                            padding: '0.25rem 0.5rem',
-                            borderRadius: '0.375rem',
-                            fontSize: '0.6875rem',
-                          }}
-                        >
-                          <Star
-                            style={{ width: '0.875rem', height: '0.875rem' }}
-                          />
-                          Helpful
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Response Content */}
-                    <p
-                      className="text-gray-700 leading-normal whitespace-pre-wrap"
-                      style={{
-                        fontSize: '0.9375rem',
-                        marginBottom: '0.625rem',
-                        marginLeft: '2.25rem',
-                      }}
-                    >
-                      {response.content}
-                    </p>
-
-                    {/* Response Actions */}
-                    <div
-                      className="flex items-center flex-wrap"
-                      style={{ gap: '0.5rem', marginLeft: '2.25rem' }}
-                    >
-                      {isQuestionPoster && (
-                        <button
-                          onClick={() =>
-                            handleToggleHelpful(
-                              response._id,
-                              response.isHelpful
-                            )
-                          }
-                          className={`flex items-center font-semibold transition-colors ${
-                            response.isHelpful
-                              ? 'border-2 border-yellow-300 bg-yellow-50 text-yellow-700 hover:bg-yellow-100'
-                              : 'border-2 border-gray-300 bg-white text-gray-600 hover:bg-gray-50'
-                          }`}
-                          style={{
-                            gap: '0.375rem',
-                            padding: '0.375rem 0.625rem',
-                            borderRadius: '0.375rem',
-                            fontSize: '0.75rem',
-                          }}
-                        >
-                          <Star
-                            style={{ width: '0.875rem', height: '0.875rem' }}
-                          />
-                          {response.isHelpful ? 'Helpful' : 'Mark Helpful'}
-                        </button>
-                      )}
-                      {isResponsePoster && (
-                        <>
-                          <button
-                            onClick={() => setEditingResponseId(response._id)}
-                            className="flex items-center border-2 border-gray-300 bg-white hover:bg-gray-100 text-gray-700 font-semibold transition-colors"
-                            style={{
-                              gap: '0.375rem',
-                              padding: '0.375rem 0.625rem',
-                              borderRadius: '0.375rem',
-                              fontSize: '0.75rem',
-                            }}
-                          >
-                            <Edit
-                              style={{ width: '0.875rem', height: '0.875rem' }}
-                            />
-                            Edit
-                          </button>
+                      {/* Right: Action buttons */}
+                      <div
+                        className="flex items-center"
+                        style={{ gap: '0.375rem' }}
+                      >
+                        {isQuestionPoster && (
                           <button
                             onClick={() =>
-                              setDeleteModal({
-                                isOpen: true,
-                                type: 'response',
-                                id: response._id,
-                              })
+                              handleToggleHelpful(
+                                response._id,
+                                response.isHelpful
+                              )
                             }
-                            className="flex items-center border-2 border-red-300 bg-red-50 hover:bg-red-100 text-red-600 font-semibold transition-colors"
+                            className={`flex items-center font-semibold transition-colors ${
+                              response.isHelpful
+                                ? 'border border-yellow-300 bg-yellow-50 text-yellow-700 hover:bg-yellow-100'
+                                : 'border border-gray-300 bg-white text-gray-600 hover:bg-gray-50'
+                            }`}
                             style={{
-                              gap: '0.375rem',
-                              padding: '0.375rem 0.625rem',
-                              borderRadius: '0.375rem',
-                              fontSize: '0.75rem',
+                              gap: '0.25rem',
+                              padding: '0.25rem 0.5rem',
+                              borderRadius: '0.25rem',
+                              fontSize: '0.6875rem',
                             }}
                           >
-                            <Trash2
-                              style={{ width: '0.875rem', height: '0.875rem' }}
+                            <Star
+                              style={{ width: '0.75rem', height: '0.75rem' }}
                             />
-                            Delete
+                            {response.isHelpful ? 'Helpful' : 'Mark Helpful'}
                           </button>
-                        </>
-                      )}
+                        )}
+                        {isResponsePoster && (
+                          <>
+                            <button
+                              onClick={() => setEditingResponseId(response._id)}
+                              className="flex items-center border border-gray-300 bg-white hover:bg-gray-100 text-gray-700 font-semibold transition-colors"
+                              style={{
+                                gap: '0.25rem',
+                                padding: '0.25rem 0.5rem',
+                                borderRadius: '0.25rem',
+                                fontSize: '0.6875rem',
+                              }}
+                            >
+                              <Edit
+                                style={{ width: '0.75rem', height: '0.75rem' }}
+                              />
+                              Edit
+                            </button>
+                            <button
+                              onClick={() =>
+                                setDeleteModal({
+                                  isOpen: true,
+                                  type: 'response',
+                                  id: response._id,
+                                })
+                              }
+                              className="flex items-center border border-red-300 bg-red-50 hover:bg-red-100 text-red-600 font-semibold transition-colors"
+                              style={{
+                                gap: '0.25rem',
+                                padding: '0.25rem 0.5rem',
+                                borderRadius: '0.25rem',
+                                fontSize: '0.6875rem',
+                              }}
+                            >
+                              <Trash2
+                                style={{ width: '0.75rem', height: '0.75rem' }}
+                              />
+                              Delete
+                            </button>
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
                 );
