@@ -303,7 +303,7 @@ const QuestionForm = ({ isEdit = false }) => {
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="Provide detailed information about your question. Include any code snippets, error messages, or specific areas where you're stuck..."
-              rows={12}
+              rows={6}
               className={`w-full border focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all resize-y ${
                 errors.content
                   ? 'border-red-500'
