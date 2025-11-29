@@ -5,11 +5,7 @@
 
 import { ObjectId } from 'mongodb';
 import { getCollection, COLLECTIONS } from '../database_config/index.js';
-import {
-  validateString,
-  isValidObjectId,
-  validateBoolean,
-} from '../validation.js';
+import { validateString, isValidObjectId } from '../validation.js';
 
 /**
  * Creates a new question in the database

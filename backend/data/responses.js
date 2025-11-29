@@ -217,3 +217,22 @@ export const deleteResponse = async (responseId) => {
 
   return { success: true, deletedCount: result.deletedCount };
 };
+
+/**
+ * Deletes all responses for a question (cascade delete)
+ * @param {string} questionId - Question ObjectId
+ * @returns {Promise<Object>} Deletion result with count
+ * @throws {Error} If questionId is invalid
+ */
+export const deleteResponsesByQuestionId = async (questionId) => {
+  if (!isValidObjectId(questionId)) {
+    throw new Error('Invalid question ID');
+  }
+
+  const responsesCollection = getCollection(COLLECTIONS.RESPONSES);
+  const result = await responsesCollection.deleteMany({
+    questionId: new ObjectId(questionId),
+  });
+
+  return { success: true, deletedCount: result.deletedCount };
+};

@@ -6,7 +6,7 @@
 import express from 'express';
 import { body, param, query, validationResult } from 'express-validator';
 import { requireAuth } from '../middlewares.js';
-import { questionData } from '../data/index.js';
+import { questionData, responseData, notificationData } from '../data/index.js';
 import { isValidObjectId } from '../validation.js';
 
 const router = express.Router();
@@ -285,6 +285,11 @@ router.delete(
         });
       }
 
+      // Cascade delete: remove all responses and notifications for this question
+      await responseData.deleteResponsesByQuestionId(questionId);
+      await notificationData.deleteNotificationsByQuestionId(questionId);
+
+      // Delete the question itself
       await questionData.deleteQuestion(questionId);
 
       res.json({

@@ -196,3 +196,22 @@ export const deleteNotification = async (notificationId) => {
 
   return { success: true, deletedCount: result.deletedCount };
 };
+
+/**
+ * Deletes all notifications for a question (cascade delete)
+ * @param {string} questionId - Question ObjectId
+ * @returns {Promise<Object>} Deletion result with count
+ * @throws {Error} If questionId is invalid
+ */
+export const deleteNotificationsByQuestionId = async (questionId) => {
+  if (!isValidObjectId(questionId)) {
+    throw new Error('Invalid question ID');
+  }
+
+  const notificationsCollection = getCollection(COLLECTIONS.NOTIFICATIONS);
+  const result = await notificationsCollection.deleteMany({
+    questionId: new ObjectId(questionId),
+  });
+
+  return { success: true, deletedCount: result.deletedCount };
+};

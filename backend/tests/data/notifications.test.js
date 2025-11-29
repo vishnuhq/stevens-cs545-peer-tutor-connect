@@ -18,6 +18,7 @@ import {
   markAllNotificationsAsRead,
   getUnreadNotificationCount,
   deleteNotification,
+  deleteNotificationsByQuestionId,
 } from '../../data/notifications.js';
 
 describe('Notification Data Functions', () => {
@@ -327,6 +328,97 @@ describe('Notification Data Functions', () => {
       await expect(deleteNotification(fakeId)).rejects.toThrow(
         'Notification not found'
       );
+    });
+  });
+
+  describe('deleteNotificationsByQuestionId', () => {
+    it('should delete all notifications for a question', async () => {
+      // Create multiple notifications for the same question
+      await createNotification({
+        recipientId,
+        questionId,
+        senderId,
+        type: 'new_response',
+        message: 'Notification 1',
+      });
+      await createNotification({
+        recipientId,
+        questionId,
+        senderId,
+        type: 'helpful_mark',
+        message: 'Notification 2',
+      });
+      await createNotification({
+        recipientId,
+        questionId,
+        senderId,
+        type: 'question_resolved',
+        message: 'Notification 3',
+      });
+
+      // Verify notifications exist
+      const notificationsBefore = await getNotificationsByStudentId(
+        recipientId,
+        false
+      );
+      expect(notificationsBefore).toHaveLength(3);
+
+      // Delete all notifications for the question
+      const result = await deleteNotificationsByQuestionId(questionId);
+
+      expect(result.success).toBe(true);
+      expect(result.deletedCount).toBe(3);
+
+      // Verify notifications are deleted
+      const notificationsAfter = await getNotificationsByStudentId(
+        recipientId,
+        false
+      );
+      expect(notificationsAfter).toHaveLength(0);
+    });
+
+    it('should return deletedCount 0 if no notifications exist', async () => {
+      const result = await deleteNotificationsByQuestionId(questionId);
+
+      expect(result.success).toBe(true);
+      expect(result.deletedCount).toBe(0);
+    });
+
+    it('should throw error for invalid question ID', async () => {
+      await expect(
+        deleteNotificationsByQuestionId('invalid-id')
+      ).rejects.toThrow('Invalid question ID');
+    });
+
+    it('should only delete notifications for specified question', async () => {
+      const otherQuestionId = '507f1f77bcf86cd799439099';
+
+      // Create notifications for both questions
+      await createNotification({
+        recipientId,
+        questionId,
+        senderId,
+        type: 'new_response',
+        message: 'Notification for question 1',
+      });
+      await createNotification({
+        recipientId,
+        questionId: otherQuestionId,
+        senderId,
+        type: 'new_response',
+        message: 'Notification for question 2',
+      });
+
+      // Delete notifications for first question only
+      await deleteNotificationsByQuestionId(questionId);
+
+      // Verify only first question's notifications are deleted
+      const notifications = await getNotificationsByStudentId(
+        recipientId,
+        false
+      );
+      expect(notifications).toHaveLength(1);
+      expect(notifications[0].message).toBe('Notification for question 2');
     });
   });
 });

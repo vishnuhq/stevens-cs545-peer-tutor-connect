@@ -15,6 +15,7 @@ import {
   getResponsesByQuestionId,
   updateResponse,
   deleteResponse,
+  deleteResponsesByQuestionId,
 } from '../../data/responses.js';
 
 describe('Response Data Functions', () => {
@@ -310,6 +311,80 @@ describe('Response Data Functions', () => {
       await expect(deleteResponse(fakeId)).rejects.toThrow(
         'Response not found'
       );
+    });
+  });
+
+  describe('deleteResponsesByQuestionId', () => {
+    it('should delete all responses for a question', async () => {
+      // Create multiple responses for the same question
+      await createResponse({
+        questionId,
+        posterId,
+        content: 'Response 1',
+      });
+      await createResponse({
+        questionId,
+        posterId,
+        content: 'Response 2',
+      });
+      await createResponse({
+        questionId,
+        posterId,
+        content: 'Response 3',
+      });
+
+      // Verify responses exist
+      const responsesBefore = await getResponsesByQuestionId(questionId);
+      expect(responsesBefore).toHaveLength(3);
+
+      // Delete all responses for the question
+      const result = await deleteResponsesByQuestionId(questionId);
+
+      expect(result.success).toBe(true);
+      expect(result.deletedCount).toBe(3);
+
+      // Verify responses are deleted
+      const responsesAfter = await getResponsesByQuestionId(questionId);
+      expect(responsesAfter).toHaveLength(0);
+    });
+
+    it('should return deletedCount 0 if no responses exist', async () => {
+      const result = await deleteResponsesByQuestionId(questionId);
+
+      expect(result.success).toBe(true);
+      expect(result.deletedCount).toBe(0);
+    });
+
+    it('should throw error for invalid question ID', async () => {
+      await expect(deleteResponsesByQuestionId('invalid-id')).rejects.toThrow(
+        'Invalid question ID'
+      );
+    });
+
+    it('should only delete responses for specified question', async () => {
+      const otherQuestionId = '507f1f77bcf86cd799439099';
+
+      // Create responses for both questions
+      await createResponse({
+        questionId,
+        posterId,
+        content: 'Response for question 1',
+      });
+      await createResponse({
+        questionId: otherQuestionId,
+        posterId,
+        content: 'Response for question 2',
+      });
+
+      // Delete responses for first question only
+      await deleteResponsesByQuestionId(questionId);
+
+      // Verify only first question's responses are deleted
+      const responsesQ1 = await getResponsesByQuestionId(questionId);
+      const responsesQ2 = await getResponsesByQuestionId(otherQuestionId);
+
+      expect(responsesQ1).toHaveLength(0);
+      expect(responsesQ2).toHaveLength(1);
     });
   });
 });

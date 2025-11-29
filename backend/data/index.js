@@ -36,14 +36,14 @@ export const questionData = questionDataFunctions;
 
 /**
  * Response data access functions
- * Contains: createResponse, getResponseById, getResponsesByQuestionId, updateResponse, deleteResponse
+ * Contains: createResponse, getResponseById, getResponsesByQuestionId, updateResponse, deleteResponse, deleteResponsesByQuestionId
  * @namespace responseData
  */
 export const responseData = responseDataFunctions;
 
 /**
  * Notification data access functions
- * Contains: createNotification, getNotificationById, getNotificationsByStudentId, markNotificationAsRead, markAllNotificationsAsRead, getUnreadNotificationCount, deleteNotification
+ * Contains: createNotification, getNotificationById, getNotificationsByStudentId, markNotificationAsRead, markAllNotificationsAsRead, getUnreadNotificationCount, deleteNotification, deleteNotificationsByQuestionId
  * @namespace notificationData
  */
 export const notificationData = notificationDataFunctions;

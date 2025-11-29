@@ -2,6 +2,18 @@
 
 Express.js REST API server for the Peer-Tutor Connect platform. Provides authentication, course management, question/response handling, and notification services.
 
+## Table of Contents
+
+1. [Description](#description)
+2. [Tech Stack](#tech-stack)
+3. [Project Structure](#project-structure)
+4. [Database Schema](#database-schema)
+5. [API Endpoints](#api-endpoints)
+6. [Environment Variables](#environment-variables)
+7. [Installation and Setup](#installation-and-setup)
+8. [Running Tests](#running-tests)
+9. [Troubleshooting](#troubleshooting)
+
 ## Description
 
 The backend is a RESTful API built with Express.js that handles all server-side logic for the Peer-Tutor Connect application. It provides secure session-based authentication, comprehensive input validation, and a clean separation between route handlers and data access layers.
@@ -56,7 +68,7 @@ backend/
 │   ├── courses.js              # GET / (student's courses), /:courseId
 │   ├── questions.js            # GET /:courseId, /detail/:questionId; POST /; PATCH, DELETE /:questionId
 │   ├── responses.js            # GET /:questionId; POST /; PATCH /:responseId, /:responseId/helpful; DELETE /:responseId
-│   └── notifications.js        # GET /, /count; PATCH /:notificationId/read, /read-all
+│   └── notifications.js        # GET /; PATCH /:notificationId/read, /read-all
 │
 ├── seed/                       # Database seeding scripts
 │   ├── index.js                # Main orchestrator (seeds all collections)
@@ -65,15 +77,15 @@ backend/
 │   ├── seedQuestions.js        # Seeds course-specific questions
 │   └── seedResponses.js        # Seeds responses
 │
-├── tests/                      # Jest test suites (168 tests, all passing)
+├── tests/                      # Jest test suites (176 tests, all passing)
 │   ├── setup.js                # Test environment configuration
-│   ├── data/                   # Unit tests for data layer (5 suites, 119 tests)
+│   ├── data/                   # Unit tests for data layer (5 suites)
 │   │   ├── students.test.js
 │   │   ├── courses.test.js
 │   │   ├── questions.test.js
 │   │   ├── responses.test.js
 │   │   └── notifications.test.js
-│   └── routes/                 # Integration tests for routes (5 suites, 49 tests)
+│   └── routes/                 # Integration tests for routes (5 suites)
 │       ├── auth.test.js
 │       ├── courses.test.js
 │       ├── questions.test.js
@@ -106,29 +118,7 @@ Stores user accounts for Stevens students.
 }
 ```
 
-**Indexes:**
-
-- Unique index on `universityEmail` (lowercase)
-
-**Example:**
-
-```javascript
-{
-  _id: ObjectId("507f1f77bcf86cd799439011"),
-  firstName: "John",
-  lastName: "Smith",
-  universityEmail: "john.smith@stevens.edu",
-  hashedPassword: "$2b$10$...",
-  major: "Computer Science",
-  age: 20,
-  enrolledCourses: [
-    ObjectId("507f1f77bcf86cd799439012"),
-    ObjectId("507f1f77bcf86cd799439013")
-  ],
-  createdAt: ISODate("2025-01-13T00:00:00Z"),
-  updatedAt: ISODate("2025-01-13T00:00:00Z")
-}
-```
+**Indexes:** Unique index on `universityEmail` (lowercase)
 
 ### 2. courses Collection
 
@@ -149,29 +139,7 @@ Stores course information.
 }
 ```
 
-**Indexes:**
-
-- Unique index on `courseCode`
-
-**Example:**
-
-```javascript
-{
-  _id: ObjectId("507f1f77bcf86cd799439012"),
-  courseCode: "CS545",
-  courseName: "Human Computer Interaction",
-  section: "WS",
-  department: "Computer Science",
-  instructorName: "Dr. Gregg Vesonder",
-  instructorEmail: "gvesonde@stevens.edu",
-  term: "Fall 2025",
-  enrolledStudents: [
-    ObjectId("507f1f77bcf86cd799439011"),
-    ObjectId("507f1f77bcf86cd799439014")
-  ],
-  createdAt: ISODate("2025-01-13T00:00:00Z")
-}
-```
+**Indexes:** Unique index on `courseCode`
 
 ### 3. questions Collection
 
@@ -183,7 +151,7 @@ Stores questions posted by students.
   courseId: ObjectId,               // Required, references courses._id
   posterId: ObjectId,               // Required, references students._id
   title: String,                    // Required, 1-200 chars
-  content: String,                  // Required, 1-5000 chars
+  content: String,                  // Required, 1-2000 chars
   isAnonymous: Boolean,             // Required, default false
   isResolved: Boolean,              // Required, default false
   createdAt: Date,                  // Timestamp of question creation
@@ -191,26 +159,7 @@ Stores questions posted by students.
 }
 ```
 
-**Indexes:**
-
-- Index on `courseId` for efficient course-based queries
-- Index on `posterId` for user's question history
-
-**Example:**
-
-```javascript
-{
-  _id: ObjectId("507f1f77bcf86cd799439015"),
-  courseId: ObjectId("507f1f77bcf86cd799439012"),
-  posterId: ObjectId("507f1f77bcf86cd799439011"),
-  title: "Help with Nielsen's Heuristics",
-  content: "I'm confused about the difference between 'Recognition rather than recall' and 'Consistency and standards'. Can someone explain with examples?",
-  isAnonymous: false,
-  isResolved: false,
-  createdAt: ISODate("2025-01-13T10:30:00Z"),
-  updatedAt: ISODate("2025-01-13T10:30:00Z")
-}
-```
+**Indexes:** Index on `courseId` for efficient course-based queries
 
 ### 4. responses Collection
 
@@ -229,24 +178,7 @@ Stores responses to questions.
 }
 ```
 
-**Indexes:**
-
-- Index on `questionId` for efficient response retrieval
-
-**Example:**
-
-```javascript
-{
-  _id: ObjectId("507f1f77bcf86cd799439016"),
-  questionId: ObjectId("507f1f77bcf86cd799439015"),
-  posterId: ObjectId("507f1f77bcf86cd799439014"),
-  content: "Recognition rather than recall means users shouldn't have to remember information. Everything they need should be visible. For example, a dropdown menu shows all options instead of making users type from memory.",
-  isAnonymous: false,
-  isHelpful: true,
-  createdAt: ISODate("2025-01-13T10:45:00Z"),
-  updatedAt: ISODate("2025-01-13T11:00:00Z")
-}
-```
+**Indexes:** Index on `questionId` for efficient response retrieval
 
 ### 5. notifications Collection
 
@@ -265,25 +197,7 @@ Stores notifications for students.
 }
 ```
 
-**Indexes:**
-
-- Index on `recipientId` for efficient user notification queries
-- Compound index on `recipientId` + `isRead` for unread notifications
-
-**Example:**
-
-```javascript
-{
-  _id: ObjectId("507f1f77bcf86cd799439017"),
-  recipientId: ObjectId("507f1f77bcf86cd799439011"),
-  questionId: ObjectId("507f1f77bcf86cd799439015"),
-  senderId: ObjectId("507f1f77bcf86cd799439014"),
-  type: "new_response",
-  message: "Someone replied to your question: Help with Nielsen's Heuristics",
-  isRead: false,
-  createdAt: ISODate("2025-01-13T10:45:00Z")
-}
-```
+**Indexes:** Index on `recipientId` for efficient user notification queries
 
 ## API Endpoints
 
@@ -362,14 +276,13 @@ Logout and destroy session.
 
 #### GET /api/auth/check
 
-Check if user is authenticated.
+Check if user is currently authenticated.
 
-**Response (200):**
+**Response (200) - Authenticated:**
 
 ```javascript
 {
-  "success": true,
-  "isAuthenticated": true,
+  "loggedIn": true,
   "student": {
     "id": "507f1f77bcf86cd799439011",
     "firstName": "John",
@@ -379,12 +292,11 @@ Check if user is authenticated.
 }
 ```
 
-**Response (401):**
+**Response (200) - Not Authenticated:**
 
 ```javascript
 {
-  "success": false,
-  "isAuthenticated": false
+  "loggedIn": false
 }
 ```
 
@@ -424,9 +336,7 @@ Get a specific course by ID.
 
 **Authentication:** Required
 
-**Parameters:**
-
-- `courseId`: MongoDB ObjectId
+**Parameters:** `courseId` - MongoDB ObjectId
 
 **Response (200):** Single course object
 
@@ -447,14 +357,11 @@ Get all questions for a course with filtering and sorting.
 
 **Authentication:** Required
 
-**Parameters:**
-
-- `courseId`: MongoDB ObjectId
+**Parameters:** `courseId` - MongoDB ObjectId
 
 **Query Parameters:**
 
-- `sort`: Optional, "newest" (default), "oldest"
-- `filter`: Optional, "answered", "unanswered"
+- `sort`: Optional, "newest" (default), "oldest", "answered", "unanswered"
 
 **Response (200):**
 
@@ -472,8 +379,7 @@ Get all questions for a course with filtering and sorting.
       "isResolved": false,
       "createdAt": "2025-01-13T10:30:00.000Z",
       "updatedAt": "2025-01-13T10:30:00.000Z",
-      "posterName": "John Smith",        // Populated from students
-      "responseCount": 3                  // Count of responses
+      "posterName": "John Smith"
     }
   ]
 }
@@ -481,13 +387,11 @@ Get all questions for a course with filtering and sorting.
 
 #### GET /api/questions/detail/:questionId
 
-Get a single question with full details and all responses.
+Get a single question with full details.
 
 **Authentication:** Required
 
-**Parameters:**
-
-- `questionId`: MongoDB ObjectId
+**Parameters:** `questionId` - MongoDB ObjectId
 
 **Response (200):**
 
@@ -504,20 +408,7 @@ Get a single question with full details and all responses.
     "isResolved": false,
     "createdAt": "2025-01-13T10:30:00.000Z",
     "updatedAt": "2025-01-13T10:30:00.000Z",
-    "posterName": "John Smith",
-    "responses": [
-      {
-        "_id": "507f1f77bcf86cd799439016",
-        "questionId": "507f1f77bcf86cd799439015",
-        "posterId": "507f1f77bcf86cd799439014",
-        "content": "Recognition rather than recall...",
-        "isAnonymous": false,
-        "isHelpful": true,
-        "createdAt": "2025-01-13T10:45:00.000Z",
-        "updatedAt": "2025-01-13T11:00:00.000Z",
-        "posterName": "Jane Doe"
-      }
-    ]
+    "posterName": "John Smith"
   }
 }
 ```
@@ -534,7 +425,7 @@ Create a new question.
 {
   "courseId": "507f1f77bcf86cd799439012",  // Required, ObjectId
   "title": "Question title",                // Required, 1-200 chars
-  "content": "Question content",            // Required, 1-5000 chars
+  "content": "Question content",            // Required, 1-2000 chars
   "isAnonymous": false                      // Optional, default false
 }
 ```
@@ -556,9 +447,7 @@ Update a question (poster only).
 
 **Authorization:** Must be the question poster
 
-**Parameters:**
-
-- `questionId`: MongoDB ObjectId
+**Parameters:** `questionId` - MongoDB ObjectId
 
 **Request Body:**
 
@@ -581,15 +470,13 @@ Update a question (poster only).
 
 #### DELETE /api/questions/:questionId
 
-Delete a question (poster only).
+Delete a question (poster only). **Cascade deletes all associated responses and notifications.**
 
 **Authentication:** Required
 
 **Authorization:** Must be the question poster
 
-**Parameters:**
-
-- `questionId`: MongoDB ObjectId
+**Parameters:** `questionId` - MongoDB ObjectId
 
 **Response (200):**
 
@@ -608,9 +495,7 @@ Get all responses for a question.
 
 **Authentication:** Required
 
-**Parameters:**
-
-- `questionId`: MongoDB ObjectId
+**Parameters:** `questionId` - MongoDB ObjectId
 
 **Response (200):**
 
@@ -668,9 +553,7 @@ Update a response (responder only).
 
 **Authorization:** Must be the responder
 
-**Parameters:**
-
-- `responseId`: MongoDB ObjectId
+**Parameters:** `responseId` - MongoDB ObjectId
 
 **Request Body:**
 
@@ -691,15 +574,21 @@ Update a response (responder only).
 
 #### PATCH /api/responses/:responseId/helpful
 
-Mark a response as helpful (question poster only).
+Mark or unmark a response as helpful (question poster only).
 
 **Authentication:** Required
 
 **Authorization:** Must be the question poster
 
-**Parameters:**
+**Parameters:** `responseId` - MongoDB ObjectId
 
-- `responseId`: MongoDB ObjectId
+**Request Body:**
+
+```javascript
+{
+  "isHelpful": true   // Required, boolean (true to mark, false to unmark)
+}
+```
 
 **Response (200):**
 
@@ -718,9 +607,7 @@ Delete a response (responder only).
 
 **Authorization:** Must be the responder
 
-**Parameters:**
-
-- `responseId`: MongoDB ObjectId
+**Parameters:** `responseId` - MongoDB ObjectId
 
 **Response (200):**
 
@@ -741,7 +628,7 @@ Get notifications for the authenticated student.
 
 **Query Parameters:**
 
-- `unreadOnly`: Optional, "true" or "false" (default: "true")
+- `unreadOnly`: Optional, "true" (default) or "false"
 
 **Response (200):**
 
@@ -763,21 +650,6 @@ Get notifications for the authenticated student.
 }
 ```
 
-#### GET /api/notifications/count
-
-Get count of unread notifications for authenticated student.
-
-**Authentication:** Required
-
-**Response (200):**
-
-```javascript
-{
-  "success": true,
-  "count": 5
-}
-```
-
 #### PATCH /api/notifications/:notificationId/read
 
 Mark a specific notification as read.
@@ -786,9 +658,7 @@ Mark a specific notification as read.
 
 **Authorization:** Must be the recipient
 
-**Parameters:**
-
-- `notificationId`: MongoDB ObjectId
+**Parameters:** `notificationId` - MongoDB ObjectId
 
 **Response (200):**
 
@@ -811,7 +681,7 @@ Mark all notifications as read for authenticated student.
 {
   "success": true,
   "message": "All notifications marked as read",
-  "modifiedCount": 5
+  "count": 5
 }
 ```
 
@@ -843,7 +713,7 @@ FRONTEND_URL=http://localhost:5173
 
 See `.env.example` for a template.
 
-## Installation & Setup
+## Installation and Setup
 
 ### 1. Install Dependencies
 
@@ -851,8 +721,6 @@ See `.env.example` for a template.
 cd backend
 npm install
 ```
-
-This installs all required packages listed in package.json.
 
 ### 2. Configure Environment
 
@@ -892,8 +760,8 @@ This creates:
 
 - 5 Stevens courses (CS545, CS590, CS555, SSW590, CS546)
 - 100 diverse student accounts (all with password: `password123`)
-- course-relevant questions
-- helpful responses
+- Course-relevant questions
+- Helpful responses
 
 **Note:** The seed script will clear existing data before seeding.
 
@@ -938,13 +806,13 @@ Expected response:
 npm test
 ```
 
-This runs all 168 tests serially and generates coverage reports in the `coverage/` directory.
+This runs all 176 tests serially and generates coverage reports in the `coverage/` directory.
 
 **Expected Output:**
 
 ```
 Test Suites: 10 passed, 10 total
-Tests:       168 passed, 168 total
+Tests:       176 passed, 176 total
 Time:        ~11s
 ```
 
@@ -981,59 +849,6 @@ The test database is automatically:
 - Cleaned up after all tests (afterAll hooks)
 
 **Important:** Test database is independent from development database.
-
-## Security Features
-
-### Password Security
-
-- **bcrypt hashing**: 10 salt rounds (computationally expensive to crack)
-- Passwords never stored or transmitted in plain text
-- Password requirements enforced at client and server
-
-### Session Security
-
-- **httpOnly cookies**: JavaScript cannot access session cookies (XSS protection)
-- **sameSite cookies**: CSRF protection
-- **48-hour expiry**: Automatic logout after 2 days
-- **Secure flag in production**: HTTPS-only cookies when NODE_ENV=production
-
-### Input Validation
-
-**Three-layer validation approach:**
-
-1. **Client-side**: Basic validation in React forms (immediate feedback)
-2. **Route middleware**: express-validator checks all request parameters
-3. **Data layer**: Final validation before database operations
-
-**Validation includes:**
-
-- Type checking (string, number, boolean, ObjectId)
-- Length constraints (min/max characters)
-- Format validation (email, ObjectId)
-- Content sanitization (trim whitespace, lowercase emails)
-- XSS prevention (HTML escaping)
-
-### Authorization
-
-- **Authentication required**: Most endpoints require valid session
-- **Resource ownership**: Users can only edit/delete their own content
-  - Question poster can update/delete question
-  - Response poster can update/delete response
-  - Question poster can mark responses as helpful
-- **Course enrollment**: Students can only access courses they're enrolled in
-
-### MongoDB Injection Prevention
-
-- **ObjectId validation**: All IDs validated before database queries
-- **Parameterized queries**: Using MongoDB driver's safe query methods
-- **Type enforcement**: Strict typing for all database operations
-
-### Additional Security
-
-- **Helmet**: Security headers (XSS, clickjacking, MIME sniffing protection)
-- **CORS**: Restricted to frontend origin only
-- **Rate limiting**: Can be added via express-rate-limit (not currently implemented)
-- **Error messages**: Generic errors prevent information leakage
 
 ## Troubleshooting
 
@@ -1164,97 +979,8 @@ use peer-tutor-connect
 db.currentOp()
 ```
 
-3. Check for N+1 query problems (shouldn't exist with current architecture)
-
 **High memory usage**
 
 - Check for memory leaks in long-running processes
 - Monitor with: `node --inspect app.js` and Chrome DevTools
 - Ensure database connections are properly closed after operations
-
-## Development Tips
-
-### Adding New API Endpoints
-
-1. Create data function in appropriate `data/*.js` file
-2. Add route handler in appropriate `routes/*.js` file
-3. Update route registration in `routes/index.js`
-4. Write tests in `tests/data/*.test.js` and `tests/routes/*.test.js`
-5. Update this README with new endpoint documentation
-
-### Database Queries
-
-Use the data layer functions instead of direct MongoDB queries:
-
-```javascript
-// Good
-import { getStudentById } from './data/students.js';
-const student = await getStudentById(studentId);
-
-// Bad
-const collection = getCollection(COLLECTIONS.STUDENTS);
-const student = await collection.findOne({ _id: new ObjectId(studentId) });
-```
-
-### Error Handling
-
-Always use try-catch in async route handlers:
-
-```javascript
-router.get('/endpoint', requireAuth, async (req, res, next) => {
-  try {
-    // Your code here
-  } catch (error) {
-    next(error); // Let error middleware handle it
-  }
-});
-```
-
-### Logging
-
-Request logging is automatic via `requestLogger` middleware. For custom logging:
-
-```javascript
-console.log('[Info]:', message);
-console.error('[Error]:', error);
-```
-
-Production apps should use a proper logging library (Winston, Bunyan, Pino).
-
-## Production Deployment
-
-Before deploying to production:
-
-1. **Environment Variables**
-
-   - Set `NODE_ENV=production`
-   - Use strong `SESSION_SECRET` (32+ random characters)
-   - Update `MONGODB_URI` to production database
-   - Update `FRONTEND_URL` to production frontend URL
-
-2. **Security**
-
-   - Enable HTTPS (session cookies will use `secure` flag)
-   - Consider adding rate limiting
-   - Set up MongoDB authentication
-   - Use environment-specific secrets management
-
-3. **Monitoring**
-
-   - Set up application monitoring (New Relic, DataDog)
-   - Configure error tracking (Sentry)
-   - Set up MongoDB monitoring
-   - Configure log aggregation
-
-4. **Database**
-
-   - Create database indexes manually if needed
-   - Set up regular backups
-   - Configure replication for high availability
-   - Monitor query performance
-
-5. **Testing**
-   - Run full test suite: `npm test`
-   - Perform load testing
-   - Test all endpoints manually
-   - Verify CORS and authentication work with production frontend
