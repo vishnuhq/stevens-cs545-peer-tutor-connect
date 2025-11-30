@@ -29,7 +29,8 @@ export const courseData = courseDataFunctions;
 
 /**
  * Question data access functions
- * Contains: createQuestion, getQuestionById, getQuestionsByCourseId, updateQuestion, deleteQuestion
+ * Contains: createQuestion, getQuestionById, getQuestionsByCourseId,
+ *           getNewQuestionCountsByCourseIds, updateQuestion, deleteQuestion
  * @namespace questionData
  */
 export const questionData = questionDataFunctions;

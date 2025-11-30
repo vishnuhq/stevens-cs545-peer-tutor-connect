@@ -260,3 +260,48 @@ export const deleteQuestion = async (questionId) => {
 
   return { success: true, deletedCount: result.deletedCount };
 };
+
+/**
+ * Gets count of questions created in the last 24 hours for multiple courses
+ * @param {Array<string>} courseIds - Array of course ObjectId strings
+ * @returns {Promise<Object>} Map of courseId string to count
+ * @throws {Error} If any courseId is invalid
+ */
+export const getNewQuestionCountsByCourseIds = async (courseIds) => {
+  if (!Array.isArray(courseIds) || courseIds.length === 0) {
+    return {};
+  }
+
+  for (const id of courseIds) {
+    if (!isValidObjectId(id)) {
+      throw new Error('Invalid course ID');
+    }
+  }
+
+  const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  const questionsCollection = getCollection(COLLECTIONS.QUESTIONS);
+
+  const results = await questionsCollection
+    .aggregate([
+      {
+        $match: {
+          courseId: { $in: courseIds.map((id) => new ObjectId(id)) },
+          createdAt: { $gte: twentyFourHoursAgo },
+        },
+      },
+      {
+        $group: {
+          _id: '$courseId',
+          count: { $sum: 1 },
+        },
+      },
+    ])
+    .toArray();
+
+  const countsMap = {};
+  for (const result of results) {
+    countsMap[result._id.toString()] = result.count;
+  }
+
+  return countsMap;
+};

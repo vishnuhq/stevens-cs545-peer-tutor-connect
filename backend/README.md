@@ -77,7 +77,7 @@ backend/
 │   ├── seedQuestions.js        # Seeds course-specific questions
 │   └── seedResponses.js        # Seeds responses
 │
-├── tests/                      # Jest test suites (176 tests, all passing)
+├── tests/                      # Jest test suites (184 tests, all passing)
 │   ├── setup.js                # Test environment configuration
 │   ├── data/                   # Unit tests for data layer (5 suites)
 │   │   ├── students.test.js
@@ -324,7 +324,8 @@ Get all courses the authenticated student is enrolled in.
       "instructorEmail": "gvesonde@stevens.edu",
       "term": "Fall 2025",
       "enrolledStudents": ["..."],
-      "createdAt": "2025-01-13T00:00:00.000Z"
+      "createdAt": "2025-01-13T00:00:00.000Z",
+      "newQuestionCount": 3  // Number of questions created in the last 24 hours
     }
   ]
 }
@@ -806,13 +807,13 @@ Expected response:
 npm test
 ```
 
-This runs all 176 tests serially and generates coverage reports in the `coverage/` directory.
+This runs all 184 tests serially and generates coverage reports in the `coverage/` directory.
 
 **Expected Output:**
 
 ```
 Test Suites: 10 passed, 10 total
-Tests:       176 passed, 176 total
+Tests:       184 passed, 184 total
 Time:        ~11s
 ```
 

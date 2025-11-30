@@ -29,6 +29,7 @@ describe('Courses Routes', () => {
   afterAll(async () => {
     await db.collection('students').deleteMany({});
     await db.collection('courses').deleteMany({});
+    await db.collection('questions').deleteMany({});
     await closeConnection();
   });
 
@@ -198,6 +199,83 @@ describe('Courses Routes', () => {
       expect(course).toHaveProperty('instructorName');
       expect(course).toHaveProperty('instructorEmail');
       expect(course).toHaveProperty('term');
+    });
+
+    it('should include newQuestionCount for each course', async () => {
+      // Clear any existing questions
+      await db.collection('questions').deleteMany({});
+
+      const now = new Date();
+      const twelveHoursAgo = new Date(now.getTime() - 12 * 60 * 60 * 1000);
+      const thirtyHoursAgo = new Date(now.getTime() - 30 * 60 * 60 * 1000);
+
+      // Add 2 recent questions to CS545 (testCourses[0])
+      await db.collection('questions').insertMany([
+        {
+          courseId: testCourses[0],
+          posterId: testStudent._id,
+          title: 'New Question 1',
+          content: 'Content',
+          isAnonymous: false,
+          isResolved: false,
+          createdAt: now,
+          updatedAt: now,
+        },
+        {
+          courseId: testCourses[0],
+          posterId: testStudent._id,
+          title: 'New Question 2',
+          content: 'Content',
+          isAnonymous: false,
+          isResolved: false,
+          createdAt: twelveHoursAgo,
+          updatedAt: twelveHoursAgo,
+        },
+        // Old question - should NOT count
+        {
+          courseId: testCourses[0],
+          posterId: testStudent._id,
+          title: 'Old Question',
+          content: 'Content',
+          isAnonymous: false,
+          isResolved: false,
+          createdAt: thirtyHoursAgo,
+          updatedAt: thirtyHoursAgo,
+        },
+      ]);
+
+      const response = await request(app)
+        .get('/api/courses')
+        .set('Cookie', authCookie);
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+
+      // Find CS545 course
+      const cs545 = response.body.courses.find((c) => c.courseCode === 'CS545');
+      const cs590 = response.body.courses.find((c) => c.courseCode === 'CS590');
+
+      expect(cs545).toHaveProperty('newQuestionCount');
+      expect(cs545.newQuestionCount).toBe(2); // 2 recent, not 3 (old excluded)
+      expect(cs590).toHaveProperty('newQuestionCount');
+      expect(cs590.newQuestionCount).toBe(0); // No questions
+
+      // Clean up
+      await db.collection('questions').deleteMany({});
+    });
+
+    it('should return 0 for courses with no new questions', async () => {
+      // Ensure no questions exist
+      await db.collection('questions').deleteMany({});
+
+      const response = await request(app)
+        .get('/api/courses')
+        .set('Cookie', authCookie);
+
+      expect(response.status).toBe(200);
+      response.body.courses.forEach((course) => {
+        expect(course.newQuestionCount).toBe(0);
+      });
     });
   });
 });

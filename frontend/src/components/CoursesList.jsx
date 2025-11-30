@@ -125,7 +125,7 @@ const CoursesList = () => {
                   className="bg-gradient-to-br from-teal-600 via-teal-700 to-emerald-700"
                   style={{
                     padding: '1.25rem',
-                    height: '7.5rem',
+                    height: '8.5rem',
                     display: 'flex',
                     flexDirection: 'column',
                   }}
@@ -137,7 +137,7 @@ const CoursesList = () => {
                     {course.courseCode} {course.courseName}
                   </h3>
                   <div
-                    className="flex items-center text-white/90 font-medium"
+                    className="flex items-center flex-wrap text-white/90 font-medium"
                     style={{
                       gap: '0.5rem',
                       fontSize: '0.875rem',
@@ -147,6 +147,26 @@ const CoursesList = () => {
                     <span>Section {course.section}</span>
                     <span>•</span>
                     <span>{course.term}</span>
+                    {/* New Questions Badge */}
+                    {course.newQuestionCount > 0 && (
+                      <>
+                        <span>•</span>
+                        <span
+                          className="flex items-center bg-white/90 text-teal-700 font-semibold"
+                          style={{
+                            gap: '0.25rem',
+                            padding: '0.125rem 0.5rem',
+                            borderRadius: '0.375rem',
+                            fontSize: '0.875rem',
+                          }}
+                        >
+                          {course.newQuestionCount} new{' '}
+                          {course.newQuestionCount === 1
+                            ? 'question'
+                            : 'questions'}
+                        </span>
+                      </>
+                    )}
                   </div>
                 </div>
 

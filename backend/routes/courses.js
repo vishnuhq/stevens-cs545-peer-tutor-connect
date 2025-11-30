@@ -6,7 +6,7 @@
 import express from 'express';
 import { param, validationResult } from 'express-validator';
 import { requireAuth } from '../middlewares.js';
-import { courseData } from '../data/index.js';
+import { courseData, questionData } from '../data/index.js';
 import { isValidObjectId } from '../validation.js';
 
 const router = express.Router();
@@ -20,9 +20,24 @@ router.get('/', requireAuth, async (req, res, next) => {
     const studentId = req.session.student.id;
     const courses = await courseData.getCoursesByStudentId(studentId);
 
+    // Get new question counts for all courses in a single query
+    let newQuestionCounts = {};
+    if (courses.length > 0) {
+      const courseIds = courses.map((c) => c._id.toString());
+      newQuestionCounts = await questionData.getNewQuestionCountsByCourseIds(
+        courseIds
+      );
+    }
+
+    // Merge counts into course objects
+    const coursesWithCounts = courses.map((course) => ({
+      ...course,
+      newQuestionCount: newQuestionCounts[course._id.toString()] || 0,
+    }));
+
     res.json({
       success: true,
-      courses,
+      courses: coursesWithCounts,
     });
   } catch (error) {
     next(error);

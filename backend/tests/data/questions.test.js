@@ -14,6 +14,7 @@ import {
   createQuestion,
   getQuestionById,
   getQuestionsByCourseId,
+  getNewQuestionCountsByCourseIds,
   updateQuestion,
   deleteQuestion,
 } from '../../data/questions.js';
@@ -348,6 +349,106 @@ describe('Question Data Functions', () => {
       await expect(deleteQuestion(fakeId)).rejects.toThrow(
         'Question not found'
       );
+    });
+  });
+
+  describe('getNewQuestionCountsByCourseIds', () => {
+    const courseId1 = '507f1f77bcf86cd799439011';
+    const courseId2 = '507f1f77bcf86cd799439022';
+    const courseId3 = '507f1f77bcf86cd799439033';
+
+    beforeEach(async () => {
+      await db.collection('questions').deleteMany({});
+
+      const now = new Date();
+      const twelveHoursAgo = new Date(now.getTime() - 12 * 60 * 60 * 1000);
+      const thirtyHoursAgo = new Date(now.getTime() - 30 * 60 * 60 * 1000);
+
+      // Course 1: 2 recent questions (within 24h)
+      await db.collection('questions').insertMany([
+        {
+          courseId: new ObjectId(courseId1),
+          posterId: new ObjectId(posterId),
+          title: 'Recent Q1',
+          content: 'Content',
+          isAnonymous: false,
+          isResolved: false,
+          createdAt: now,
+          updatedAt: now,
+        },
+        {
+          courseId: new ObjectId(courseId1),
+          posterId: new ObjectId(posterId),
+          title: 'Recent Q2',
+          content: 'Content',
+          isAnonymous: false,
+          isResolved: false,
+          createdAt: twelveHoursAgo,
+          updatedAt: twelveHoursAgo,
+        },
+        // Old question for course1 (outside 24h) - should NOT be counted
+        {
+          courseId: new ObjectId(courseId1),
+          posterId: new ObjectId(posterId),
+          title: 'Old Q',
+          content: 'Content',
+          isAnonymous: false,
+          isResolved: false,
+          createdAt: thirtyHoursAgo,
+          updatedAt: thirtyHoursAgo,
+        },
+        // Course 2: 1 recent question
+        {
+          courseId: new ObjectId(courseId2),
+          posterId: new ObjectId(posterId),
+          title: 'Course2 Recent',
+          content: 'Content',
+          isAnonymous: false,
+          isResolved: false,
+          createdAt: now,
+          updatedAt: now,
+        },
+      ]);
+      // Course 3: No questions at all
+    });
+
+    it('should return counts for multiple courses in a single query', async () => {
+      const counts = await getNewQuestionCountsByCourseIds([
+        courseId1,
+        courseId2,
+        courseId3,
+      ]);
+
+      expect(counts[courseId1]).toBe(2);
+      expect(counts[courseId2]).toBe(1);
+      expect(counts[courseId3]).toBeUndefined();
+    });
+
+    it('should only count questions from last 24 hours', async () => {
+      const counts = await getNewQuestionCountsByCourseIds([courseId1]);
+      expect(counts[courseId1]).toBe(2); // Not 3, old question excluded
+    });
+
+    it('should return empty object for empty courseIds array', async () => {
+      const counts = await getNewQuestionCountsByCourseIds([]);
+      expect(counts).toEqual({});
+    });
+
+    it('should throw error for invalid courseId in array', async () => {
+      await expect(
+        getNewQuestionCountsByCourseIds([courseId1, 'invalid-id'])
+      ).rejects.toThrow('Invalid course ID');
+    });
+
+    it('should return empty object when no recent questions exist', async () => {
+      const emptyCourseId = '507f1f77bcf86cd799439099';
+      const counts = await getNewQuestionCountsByCourseIds([emptyCourseId]);
+      expect(counts[emptyCourseId]).toBeUndefined();
+    });
+
+    it('should handle single courseId', async () => {
+      const counts = await getNewQuestionCountsByCourseIds([courseId2]);
+      expect(counts[courseId2]).toBe(1);
     });
   });
 });
