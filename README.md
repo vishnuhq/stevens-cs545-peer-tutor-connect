@@ -8,10 +8,11 @@ A web-based peer tutoring platform that connects students for instant academic h
 - [Tech Stack](#tech-stack)
 - [Quick Start Guide](#quick-start-guide)
 - [Academic Context](#academic-context)
+- [References](#references)
 
 ## Project Description
 
-Peer-Tutor Connect is a web application that enables real-time peer-to-peer academic help within course-specific discussion forums. Students in online courses frequently encounter learning blockers and face 24-48 hour delays when reaching out through traditional methods like emails, Canvas messages, or waiting for office hours, particularly during times when traditional help is unavailable (evenings, weekends, holidays). Our platform solves this by providing instant access to classmates who can answer questions and explain concepts, with course forums automatically available after login based on enrollment and an optional anonymous posting feature for students who feel uncomfortable asking questions publicly.
+Peer-Tutor Connect is a web application that enables real-time peer-to-peer academic help within course-specific discussion forums. Students in online courses frequently encounter learning blockers and face 24-48 hour delays when reaching out through traditional methods like emails, Canvas messages, or waiting for office hours, particularly during times when traditional help is unavailable (evenings, weekends, holidays). Our platform solves this by providing instant access to classmates who can answer questions and explain concepts, with course forums automatically available after login based on enrollment and an optional anonymous posting feature for students who feel uncomfortable asking questions publicly. [Watch Demo Video](https://youtu.be/LSd3l9PawvI)
 
 ### Key Features
 
@@ -126,7 +127,50 @@ The application meets WCAG 2.2 AAA guidelines, the strictest accessibility stand
 
 ### Additional Evaluations
 
-- PAR Review: _To be added_
-- Heuristic Evaluation: _To be added_
-- Laws of Simplicity Analysis: _To be added_
-- Microinteractions: _To be added_
+#### PAR Review
+
+- **Perception:** Interface groups information logically (course dashboards, consistent card layouts, visual hierarchy)
+- **Attention:** Bold Post Question button, visible Reply buttons, helpful response indicators, Answered badges, new question count badges, breathing notification badge
+- **Retention:** Familiar discussion forum patterns, minimal steps, consistent interactions, breadcrumbs, help widget
+
+#### Heuristic Evaluation
+
+| Nielsen Heuristic                   | What We Did                                                                          |  ✓  |
+| ----------------------------------- | ------------------------------------------------------------------------------------ | :-: |
+| Visibility of System Status         | Toast notifications, loading spinners, breathing notification badge                  |  ✓  |
+| Match Between System and Real World | Forum layout mirrors familiar platforms, natural language, recognizable course codes |  ✓  |
+| User Control and Freedom            | Edit/delete content, toggle anonymous, cancel actions, breadcrumbs                   |  ✓  |
+| Consistency and Standards           | Uniform buttons, cards, colors, wording; responsive design                           |  ✓  |
+| Error Prevention                    | Form validation, real-time character counts, delete confirmation                     |  ✓  |
+| Recognition Rather Than Recall      | Breadcrumbs, dashboard course cards, help widget, visual cues                        |  ✓  |
+| Flexibility and Efficiency of Use   | Ctrl+Enter shortcuts, multiple paths, sort/filter, new question badges               |  ✓  |
+| Aesthetic and Minimalist Design     | Only relevant info per page, proper spacing, clear hierarchy                         |  ✓  |
+| Help Users Recognize Errors         | Specific error messages, real-time counters, editable content                        |  ✓  |
+| Help and Documentation              | Floating help widget always accessible                                               |  ✓  |
+
+#### Laws of Simplicity
+
+- **Time:** Reduced wait from 24-48 hours to 81 seconds. Merged pages, added search/filter/sort. New question badges cut response time by 71%.
+- **Organize:** Course-specific dashboards following SLIP (Sort, Label, Integrate, Prioritize).
+- **Learn:** Built on familiar discussion forum patterns; users navigated without confusion.
+- **Reduce:** Merged redundant pages, minimized navigation with badges, kept features essential only.
+
+#### Microinteractions
+
+- **Scroll to Top Button:** Appears after 300px scroll, smooth scrolls to top
+- **Toast Notifications:** Color-coded messages (1.5-3s), auto-dismiss
+- **Real-time Character Counts:** Updates per keystroke, turns red when exceeded
+- **Form Validation Feedback:** Red borders, specific error messages
+- **Notification Badge:** Red pulsing animation on bell icon
+- **Delete Confirmation Modal:** Prevents accidental deletions
+- **Button Hover Effects:** Color shifts, scaling, shadows
+
+### References
+
+- [EDUCAUSE 2023 Students and Technology Report](https://www.educause.edu/ecar/research-publications/2023/students-and-technology-report-flexibility-choice-and-equity-in-the-student-experience/introduction-and-key-findings)
+- [Knack Peer Tutoring Platform](https://www.joinknack.com/)
+- [Grand View Research - Online Tutoring Services Market](https://www.grandviewresearch.com/industry-analysis/online-tutoring-services-market)
+- [Chrome Lighthouse](https://developer.chrome.com/docs/lighthouse)
+- [Deque axe DevTools](https://www.deque.com/axe/browser-extensions/)
+- [Nielsen Norman Group - 10 Usability Heuristics](https://www.nngroup.com/articles/ten-usability-heuristics/)
+- [John Maeda - The Laws of Simplicity](https://lawsofsimplicity.com/)
