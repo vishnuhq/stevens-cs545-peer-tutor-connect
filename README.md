@@ -165,7 +165,7 @@ The application meets WCAG 2.2 AAA guidelines, the strictest accessibility stand
 - **Delete Confirmation Modal:** Prevents accidental deletions
 - **Button Hover Effects:** Color shifts, scaling, shadows
 
-### References
+## References
 
 - [EDUCAUSE 2023 Students and Technology Report](https://www.educause.edu/ecar/research-publications/2023/students-and-technology-report-flexibility-choice-and-equity-in-the-student-experience/introduction-and-key-findings)
 - [Knack Peer Tutoring Platform](https://www.joinknack.com/)
